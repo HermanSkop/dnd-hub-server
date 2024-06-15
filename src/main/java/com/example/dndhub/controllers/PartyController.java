@@ -17,36 +17,26 @@ import java.util.Set;
 
 @CrossOrigin
 @RestController
-public class MainController {
-    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
+@RequestMapping(path="/party")
+public class PartyController {
+    private static final Logger logger = LoggerFactory.getLogger(PartyController.class);
 
     private final PartyService partyService;
     private final PlayerService playerService;
 
     @Autowired
-    public MainController(PartyService partyService, PlayerService playerService) {
+    public PartyController(PartyService partyService, PlayerService playerService) {
         this.partyService = partyService;
         this.playerService = playerService;
     }
 
-    @PostMapping(path="/add")
-    public @ResponseBody String addNewParty (@RequestParam String name, @RequestParam String description,
-                                             @RequestParam int maxPlayers, @RequestParam LocalDate startingDate,
-                                             @RequestParam LocalDate endingDate) {
-        int id = partyService.saveParty(PartyDto.builder()
-                .name(name)
-                .description(description)
-                .maxPlayers(maxPlayers)
-                .duration(PartyDto.DurationDto.builder()
-                        .startingDate(startingDate)
-                        .endingDate(endingDate)
-                        .build())
-                .build());
-        return partyService.getPartyById(id).toString();
+    @GetMapping(path="/{id}")
+    public @ResponseBody PartyDto getPartyById(@PathVariable("id") int id) {
+        return partyService.getPartyById(id);
     }
 
     @GetMapping(path="/all")
-    public Iterable<PartyDto> getAllParties() {
+    public @ResponseBody Iterable<PartyDto> getAllParties() {
         return partyService.getAllPartiesDeep();
     }
 
