@@ -70,6 +70,7 @@ public class PartyService {
                 .collect(Collectors.toSet());
     }
 
+    @Transactional
     public Set<PartyDto> getAllPartiesDeep() {
         return partyRepository.findAll().stream()
                 .map(this::getPartyDtoDeep)

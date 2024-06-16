@@ -40,47 +40,4 @@ public class PartyController {
         return partyService.getAllPartiesDeep();
     }
 
-    @Bean
-    public CommandLineRunner demo() {
-        return _ -> {
-            Set<PlayerDto> players = new HashSet<>();
-            PlayerDto playerDto = PlayerDto.builder()
-                    .username("John")
-                    .password("123")
-                    .email("email@gmail.com")
-                    .registrationDate(LocalDate.now())
-                    .avatarPath("path")
-                    .biography("biography")
-                    .build();
-            PlayerDto playerDto2 = PlayerDto.builder()
-                    .username("John2")
-                    .password("123")
-                    .email("email1@gmail.com")
-                    .registrationDate(LocalDate.now())
-                    .avatarPath("path")
-                    .biography("biography")
-                    .build();
-
-            playerDto.setId(playerService.savePlayer(playerDto));
-            playerDto2.setId(playerService.savePlayer(playerDto2));
-
-            players.add(playerDto);
-            players.add(playerDto2);
-
-            PartyDto partyDto = PartyDto.builder()
-                    .name("Party")
-                    .description("Description")
-                    .maxPlayers(5)
-                    .duration(PartyDto.DurationDto.builder()
-                            .startingDate(LocalDate.now())
-                            .endingDate(LocalDate.now())
-                            .build())
-                    .participatingPlayers(players)
-                    .host(playerDto)
-                    .playersSaved(players)
-                    .build();
-
-            partyService.saveParty(partyDto);
-        };
-    }
 }
