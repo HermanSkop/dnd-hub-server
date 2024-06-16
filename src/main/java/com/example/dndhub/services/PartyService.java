@@ -70,34 +70,23 @@ public class PartyService {
                 .collect(Collectors.toSet());
     }
 
+    public Set<PartyDto> getAllPartiesDeep() {
+        return partyRepository.findAll().stream()
+                .map(this::getPartyDtoDeep)
+                .collect(Collectors.toSet());
+    }
+
     public PartyDto getPartyById(int id) {
         Party party = partyRepository.findById(id).orElseThrow(() -> new RuntimeException("Party not found"));
         return getPartyDto(party);
     }
 
-    public Set<PartyDto> getAllPartiesDeep() {
-        return partyRepository.findAll().stream()
-                .map(party -> PartyDto.builder()
-                        .id(party.getId())
-                        .name(party.getName())
-                        .description(party.getDescription())
-                        .maxPlayers(party.getMaxPlayers())
-                        .duration(PartyDto.DurationDto.builder()
-                                .startingDate(party.getDuration().getStartingDate())
-                                .endingDate(party.getDuration().getEndingDate())
-                                .build())
-                        .participatingPlayers(party.getParticipatingPlayers().stream()
-                                .map(PlayerService::getPlayerDto)
-                                .collect(Collectors.toSet()))
-                        .host(PlayerService.getPlayerDto(party.getHost()))
-                        .playersSaved(party.getPlayersSaved().stream()
-                                .map(PlayerService::getPlayerDto)
-                                .collect(Collectors.toSet()))
-                        .build())
-                .collect(Collectors.toSet());
+    public PartyDto getPartyByIdDeep(int id) {
+        Party party = partyRepository.findById(id).orElseThrow(() -> new RuntimeException("Party not found"));
+        return getPartyDtoDeep(party);
     }
 
-    public PartyDto getPartyDto(Party party) {
+    PartyDto getPartyDto(Party party) {
         return PartyDto.builder()
                 .id(party.getId())
                 .name(party.getName())
@@ -107,6 +96,26 @@ public class PartyService {
                         .startingDate(party.getDuration().getStartingDate())
                         .endingDate(party.getDuration().getEndingDate())
                         .build())
+                .build();
+    }
+
+    PartyDto getPartyDtoDeep(Party party) {
+        return PartyDto.builder()
+                .id(party.getId())
+                .name(party.getName())
+                .description(party.getDescription())
+                .maxPlayers(party.getMaxPlayers())
+                .duration(PartyDto.DurationDto.builder()
+                        .startingDate(party.getDuration().getStartingDate())
+                        .endingDate(party.getDuration().getEndingDate())
+                        .build())
+                .participatingPlayers(party.getParticipatingPlayers().stream()
+                        .map(PlayerService::getPlayerDto)
+                        .collect(Collectors.toSet()))
+                .host(PlayerService.getPlayerDto(party.getHost()))
+                .playersSaved(party.getPlayersSaved().stream()
+                        .map(PlayerService::getPlayerDto)
+                        .collect(Collectors.toSet()))
                 .build();
     }
 }

@@ -31,12 +31,12 @@ public class PartyController {
     }
 
     @GetMapping(path="/{id}")
-    public @ResponseBody PartyDto getPartyById(@PathVariable("id") int id) {
-        return partyService.getPartyById(id);
+    public PartyDto getPartyById(@PathVariable("id") int id) {
+        return partyService.getPartyByIdDeep(id);
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody Iterable<PartyDto> getAllParties() {
+    public Iterable<PartyDto> getAllParties() {
         return partyService.getAllPartiesDeep();
     }
 
