@@ -119,4 +119,22 @@ public class PartyService {
                         .collect(Collectors.toSet()))
                 .build();
     }
+
+    public PartyDto joinParty(int partyId, int playerId) {
+        Party party = partyRepository.findById(partyId)
+                .orElseThrow(() -> new RuntimeException("Party not found"));
+        party.getParticipatingPlayers().add(playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found")));
+        party = partyRepository.saveAndFlush(party);
+        return getPartyDtoDeep(party);
+    }
+
+    public PartyDto leaveParty(int id, int playerId) {
+        Party party = partyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Party not found"));
+        party.getParticipatingPlayers().remove(playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found")));
+        party = partyRepository.saveAndFlush(party);
+        return getPartyDtoDeep(party);
+    }
 }

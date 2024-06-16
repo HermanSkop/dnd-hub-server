@@ -40,4 +40,13 @@ public class PartyController {
         return partyService.getAllPartiesDeep();
     }
 
+    @PostMapping(path="/{id}/join")
+    public PartyDto joinParty(@PathVariable("id") int id, @RequestBody int playerId) {
+        return partyService.joinParty(id, playerId);
+    }
+
+    @PostMapping(path="/{id}/leave")
+    public PartyDto leaveParty(@PathVariable("id") int id, @RequestBody int playerId) {
+        return partyService.leaveParty(id, playerId);
+    }
 }
