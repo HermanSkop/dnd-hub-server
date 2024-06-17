@@ -59,6 +59,7 @@ public class Party {
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private Set<Player> participatingPlayers = new LinkedHashSet<>();
 
+    @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
     private Player host;
 
