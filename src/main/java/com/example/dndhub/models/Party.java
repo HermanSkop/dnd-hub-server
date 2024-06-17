@@ -31,6 +31,7 @@ public class Party {
     @NotNull(message = "Name is mandatory")
     @NotBlank(message = "Name is mandatory")
     private String name;
+    @Column(length = 2000)
     @NotNull(message = "Description is mandatory")
     @NotBlank(message = "Description is mandatory")
     private String description;

@@ -35,7 +35,13 @@ public class BootstrapData implements CommandLineRunner {
         for (int i = 0; i < 5; i++) {
             PartyDto partyDto = PartyDto.builder()
                     .name("Party " + (i + 1))
-                    .description("Description " + (i + 1))
+                    .description("""
+                            "Phandalver: Forge of Destiny" is a thrilling Dungeons & Dragons campaign set in the vast and vibrant world of Faerûn.
+                            Players embark on an epic journey filled with intrigue, danger, and ancient mysteries waiting to be unraveled.
+                                                       \n
+                            As adventurers, they'll navigate through intricate dungeons, forge alliances with enigmatic factions, and confront formidable foes as they strive to shape the destiny of the realm.
+                                                       \n
+                            With rich storytelling, dynamic characters, and a blend of exploration, combat, and role-playing, "Phandalver" promises an immersive gaming experience where every choice matters. Venture forth, brave hero, and carve your legend in the annals of history.""")
                     .maxPlayers(i + 5)
                     .duration(PartyDto.DurationDto.builder()
                             .startingDate(LocalDate.now())
