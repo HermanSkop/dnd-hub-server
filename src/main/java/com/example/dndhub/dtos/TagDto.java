@@ -1,5 +1,6 @@
 package com.example.dndhub.dtos;
 
+import com.example.dndhub.dtos.party.PartyDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

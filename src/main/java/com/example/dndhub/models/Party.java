@@ -37,6 +37,7 @@ public class Party {
     @Min(1)
     private int maxPlayers;
 
+    @NotNull
     @OneToOne(cascade = CascadeType.ALL)
     private Duration duration;
 
@@ -66,10 +67,14 @@ public class Party {
     @ManyToOne(cascade = CascadeType.ALL)
     private Player host;
 
-    @PostConstruct
+    @PrePersist
+    @PreUpdate
     public void validate() {
         if (maxPlayers > maxPossiblePlayers) {
             throw new IllegalArgumentException("Max players cannot exceed " + maxPossiblePlayers);
+        }
+        if (participatingPlayers.contains(host)) {
+            throw new IllegalArgumentException("Host cannot participate their own party");
         }
     }
 

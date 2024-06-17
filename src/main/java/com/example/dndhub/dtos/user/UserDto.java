@@ -10,13 +10,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 
-@Data
 @Getter
-@Setter
-@ToString
 @SuperBuilder
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserDto implements Serializable {
     protected int id;
     @NotNull(message = "Username is mandatory")
@@ -31,4 +26,31 @@ public class UserDto implements Serializable {
     protected String email;
     @NotNull(message = "Registration date is mandatory")
     protected LocalDate registrationDate;
+
+    /**
+     * Used by @Builder to validate the object
+     */
+    public UserDto(int id, String username, String password, String email, LocalDate registrationDate) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.registrationDate = registrationDate;
+        validate();
+    }
+
+    private void validate() {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Username is mandatory");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password is mandatory");
+        }
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email is mandatory");
+        }
+        if (registrationDate == null) {
+            throw new IllegalArgumentException("Registration date is mandatory");
+        }
+    }
 }

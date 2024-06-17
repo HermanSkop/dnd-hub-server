@@ -1,9 +1,10 @@
 package com.example.dndhub;
 
-import com.example.dndhub.dtos.PartyDto;
+import com.example.dndhub.dtos.party.PartyDto;
 import com.example.dndhub.dtos.user.PlayerDto;
 import com.example.dndhub.services.PartyService;
 import com.example.dndhub.services.PlayerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ public class BootstrapData implements CommandLineRunner {
     private final PartyService partyService;
     private final PlayerService playerService;
 
+    @Autowired
     public BootstrapData(PartyService partyService, PlayerService playerService) {
         this.partyService = partyService;
         this.playerService = playerService;
