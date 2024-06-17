@@ -3,6 +3,8 @@ package com.example.dndhub.services;
 import com.example.dndhub.dtos.PartyDto;
 import com.example.dndhub.models.Duration;
 import com.example.dndhub.models.Party;
+import com.example.dndhub.models.user.Player;
+import com.example.dndhub.models.user.User;
 import com.example.dndhub.repositories.PartyRepository;
 import com.example.dndhub.repositories.PlayerRepository;
 import com.example.dndhub.repositories.TagRepository;
@@ -137,4 +139,25 @@ public class PartyService {
         party = partyRepository.saveAndFlush(party);
         return getPartyDtoDeep(party);
     }
+
+    public void deleteParty(int partyId) {
+        Party party = partyRepository.findById(partyId).orElseThrow(() -> new RuntimeException("Party not found"));
+
+        for (Player player : party.getParticipatingPlayers()) {
+            player.getParticipatedParties().remove(party);
+        }
+        party.getParticipatingPlayers().clear();
+
+        for (Player player : party.getPlayersSaved()) {
+            player.getSavedParties().remove(party);
+        }
+        party.getPlayersSaved().clear();
+
+        party.getHost().getHostedParties().remove(party);
+        party.setHost(null);
+
+        partyRepository.delete(party);
+    }
+
+
 }

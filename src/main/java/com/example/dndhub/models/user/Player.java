@@ -35,6 +35,6 @@ public class Player extends User {
 
     @ToString.Exclude
     @Builder.Default
-    @OneToMany(mappedBy = "host")
+    @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Party> hostedParties = new HashSet<>();
 }
