@@ -2,7 +2,9 @@ package com.example.dndhub.models;
 
 import com.example.dndhub.models.edition.Edition;
 import com.example.dndhub.models.user.Player;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -32,6 +34,7 @@ public class Party {
     @NotNull(message = "Description is mandatory")
     @NotBlank(message = "Description is mandatory")
     private String description;
+    @Min(1)
     private int maxPlayers;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -62,6 +65,13 @@ public class Party {
     @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
     private Player host;
+
+    @PostConstruct
+    public void validate() {
+        if (maxPlayers > maxPossiblePlayers) {
+            throw new IllegalArgumentException("Max players cannot exceed " + maxPossiblePlayers);
+        }
+    }
 
     @Override
     public final boolean equals(Object o) {

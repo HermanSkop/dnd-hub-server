@@ -9,8 +9,10 @@ import com.example.dndhub.repositories.PartyRepository;
 import com.example.dndhub.repositories.PlayerRepository;
 import com.example.dndhub.repositories.TagRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -43,17 +45,17 @@ public class PartyService {
                         .build())
                 .participatingPlayers(partyDto.getParticipatingPlayers().stream()
                         .map(playerDto -> playerRepository.findById(playerDto.getId())
-                                .orElseThrow(() -> new RuntimeException("Player not found")))
+                                .orElseThrow(() -> new EntityNotFoundException("Player not found")))
                         .collect(Collectors.toSet()))
                 .playersSaved(partyDto.getPlayersSaved().stream()
                         .map(playerDto -> playerRepository.findById(playerDto.getId())
-                                .orElseThrow(() -> new RuntimeException("Player not found")))
+                                .orElseThrow(() -> new EntityNotFoundException("Player not found")))
                         .collect(Collectors.toSet()))
                 .host(playerRepository.findById(partyDto.getHost().getId())
-                        .orElseThrow(() -> new RuntimeException("Host not found")))
+                        .orElseThrow(() -> new EntityNotFoundException("Host not found")))
                 .tags(partyDto.getTags().stream()
                         .map(tagDto -> tagRepository.findById(tagDto.getId())
-                                .orElseThrow(() -> new RuntimeException("Tag not found")))
+                                .orElseThrow(() -> new EntityNotFoundException("Tag not found")))
                         .collect(Collectors.toSet()))
                 .build();
 
@@ -79,13 +81,13 @@ public class PartyService {
                 .collect(Collectors.toSet());
     }
 
-    public PartyDto getPartyById(int id) {
-        Party party = partyRepository.findById(id).orElseThrow(() -> new RuntimeException("Party not found"));
+    public PartyDto getPartyById(int id) throws EntityNotFoundException {
+        Party party = partyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Party not found"));
         return getPartyDto(party);
     }
 
-    public PartyDto getPartyByIdDeep(int id) {
-        Party party = partyRepository.findById(id).orElseThrow(() -> new RuntimeException("Party not found"));
+    public PartyDto getPartyByIdDeep(int id) throws EntityNotFoundException {
+        Party party = partyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Party not found"));
         return getPartyDtoDeep(party);
     }
 
@@ -122,11 +124,11 @@ public class PartyService {
                 .build();
     }
 
-    public PartyDto joinParty(int partyId, int playerId) {
+    public PartyDto joinParty(int partyId, int playerId) throws EntityNotFoundException {
         Party party = partyRepository.findById(partyId)
-                .orElseThrow(() -> new RuntimeException("Party not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Party not found"));
         party.getParticipatingPlayers().add(playerRepository.findById(playerId)
-                .orElseThrow(() -> new RuntimeException("Player not found")));
+                .orElseThrow(() -> new EntityNotFoundException("Player not found")));
         party = partyRepository.saveAndFlush(party);
         return getPartyDtoDeep(party);
     }
@@ -140,8 +142,8 @@ public class PartyService {
         return getPartyDtoDeep(party);
     }
 
-    public void deleteParty(int partyId) {
-        Party party = partyRepository.findById(partyId).orElseThrow(() -> new RuntimeException("Party not found"));
+    public void deleteParty(int partyId) throws EntityNotFoundException {
+        Party party = partyRepository.findById(partyId).orElseThrow(() -> new EntityNotFoundException("Party not found"));
 
         for (Player player : party.getParticipatingPlayers()) {
             player.getParticipatedParties().remove(party);

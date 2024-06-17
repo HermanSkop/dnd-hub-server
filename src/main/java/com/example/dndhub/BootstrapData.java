@@ -86,7 +86,7 @@ public class BootstrapData implements CommandLineRunner {
         players.add(createPlayer("arthas", "password118", "arthas.some@exmpl.com", "/avatars/1.png", "Arthas is a great player"));
         players.add(createPlayer("chears", "password119", "chears.some@exmpl.com", "/avatars/2.png", "Chears thinks he is a great player"));
         players.add(createPlayer("dorin", "password120", "dorin.dorin@exmpl.com", "/avatars/3.png", "Just a player"));
-        players.add(createPlayer("kali", "password121", "kali.k@exmpl.com", "/avatars/4.png", "Kali is a great player"));
+        players.add(createPlayer("kali", "password121", "kali.k@exmpl.com", "/avatars/4.png", null));
 
 
         for (PlayerDto player : players) {

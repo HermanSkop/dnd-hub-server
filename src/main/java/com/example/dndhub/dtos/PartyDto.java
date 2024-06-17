@@ -56,12 +56,22 @@ public class PartyDto implements Serializable {
         @NotNull(message = "Starting date is mandatory")
         private LocalDate startingDate;
         private LocalDate endingDate;
+
+        @PostConstruct
+        private void validateDuration() {
+            if (startingDate.isAfter(endingDate)) {
+                throw new IllegalArgumentException("Starting date must be before ending date");
+            }
+            if (startingDate.plusDays(maxDaysDuration).isBefore(endingDate)) {
+                throw new IllegalArgumentException("Duration must be less than " + maxDaysDuration + " days");
+            }
+        }
     }
 
     @PostConstruct
-    public void validateMaxPlayers() {
+    public void validate() {
         if (maxPlayers > maxPossiblePlayers) {
-            throw new IllegalArgumentException("Max players cannot be greater than max possible players");
+            throw new IllegalArgumentException("Max players cannot exceed " + maxPossiblePlayers);
         }
     }
 }

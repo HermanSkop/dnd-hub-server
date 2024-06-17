@@ -1,5 +1,6 @@
 package com.example.dndhub.models;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -25,6 +26,16 @@ public class Duration {
 
     @OneToOne(mappedBy = "duration")
     private Party party;
+
+    @PostConstruct
+    private void validateDuration() {
+        if (startingDate.isAfter(endingDate)) {
+            throw new IllegalArgumentException("Starting date must be before ending date");
+        }
+        if (startingDate.plusDays(maxDaysDuration).isBefore(endingDate)) {
+            throw new IllegalArgumentException("Duration must be less than " + maxDaysDuration + " days");
+        }
+    }
 
     @Override
     public final boolean equals(Object o) {
