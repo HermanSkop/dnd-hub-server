@@ -18,6 +18,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Table(name = "app_user")
 public abstract class User {
+    public static final String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -28,7 +29,7 @@ public abstract class User {
     @NotBlank(message = "Password is mandatory")
     private String password;
     @Column(unique = true)
-    @Email
+    @Email(message = "Email must be a valid email", regexp = emailRegex)
     @NotNull(message = "Email is mandatory")
     @NotBlank(message = "Email is mandatory")
     private String email;

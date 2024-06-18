@@ -1,7 +1,7 @@
 package com.example.dndhub.services;
 
 
-import com.example.dndhub.dtos.user.PlayerDto;
+import com.example.dndhub.dtos.PlayerDto;
 import com.example.dndhub.models.user.Player;
 import com.example.dndhub.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;

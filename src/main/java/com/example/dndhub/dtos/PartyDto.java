@@ -1,12 +1,7 @@
-package com.example.dndhub.dtos.party;
+package com.example.dndhub.dtos;
 
-import com.example.dndhub.dtos.TagDto;
-import com.example.dndhub.dtos.user.PlayerDto;
 import com.example.dndhub.models.edition.Edition;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serializable;
@@ -16,7 +11,6 @@ import java.util.Set;
 
 @Getter
 @Builder
-@ToString
 public class PartyDto implements Serializable {
     @Min(1)
     private static int maxPossiblePlayers = 99;
@@ -121,6 +115,15 @@ public class PartyDto implements Serializable {
         }
         if (participatingPlayers.size() > maxPlayers) {
             throw new IllegalArgumentException("Participating players cannot exceed max players");
+        }
+        if (participatingPlayers.contains(null)) {
+            throw new IllegalArgumentException("Participating players cannot contain null values");
+        }
+        if (playersSaved.contains(null)) {
+            throw new IllegalArgumentException("Saved players cannot contain null values");
+        }
+        if (tags.contains(null)) {
+            throw new IllegalArgumentException("Tags cannot contain null values");
         }
     }
 }

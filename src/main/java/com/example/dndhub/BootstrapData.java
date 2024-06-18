@@ -1,7 +1,7 @@
 package com.example.dndhub;
 
-import com.example.dndhub.dtos.party.PartyDto;
-import com.example.dndhub.dtos.user.PlayerDto;
+import com.example.dndhub.dtos.PartyDto;
+import com.example.dndhub.dtos.PlayerDto;
 import com.example.dndhub.services.PartyService;
 import com.example.dndhub.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +71,7 @@ public class BootstrapData implements CommandLineRunner {
 
     private HashSet<PlayerDto> createPlayers() {
         HashSet<PlayerDto> players = new HashSet<>();
-        players.add(createPlayer("john_doe", "password123", "john.doe@example.com", "/avatars/1.png", "Avid gamer and tech enthusiast."));
+        players.add(createPlayer("john_doe", "password123", "john.doeex@am.ple", "/avatars/1.png", "Avid gamer and tech enthusiast."));
         players.add(createPlayer("jane_smith", "password456", "jane.smith@example.com", "/avatars/2.png", "Loves outdoor adventures and hiking."));
         players.add(createPlayer("alice_jones", "password789", "alice.jones@example.com", "/avatars/3.png", "Passionate about cooking and baking."));
         players.add(createPlayer("bob_brown", "password101", "bob.brown@example.com", "/avatars/4.png", "Enjoys painting and creating art."));

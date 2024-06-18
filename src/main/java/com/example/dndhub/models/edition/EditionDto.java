@@ -1,6 +1,6 @@
 package com.example.dndhub.models.edition;
 
-import com.example.dndhub.dtos.party.PartyDto;
+import com.example.dndhub.dtos.PartyDto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

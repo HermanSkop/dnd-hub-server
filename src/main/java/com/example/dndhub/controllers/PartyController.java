@@ -1,6 +1,6 @@
 package com.example.dndhub.controllers;
 
-import com.example.dndhub.dtos.party.PartyDto;
+import com.example.dndhub.dtos.PartyDto;
 import com.example.dndhub.services.PartyService;
 import com.example.dndhub.services.PlayerService;
 import jakarta.persistence.EntityNotFoundException;

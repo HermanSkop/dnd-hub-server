@@ -1,13 +1,12 @@
 package com.example.dndhub.services;
 
-import com.example.dndhub.dtos.party.PartyDto;
+import com.example.dndhub.dtos.PartyDto;
 import com.example.dndhub.models.Duration;
 import com.example.dndhub.models.Party;
 import com.example.dndhub.models.user.Player;
 import com.example.dndhub.repositories.PartyRepository;
 import com.example.dndhub.repositories.PlayerRepository;
 import com.example.dndhub.repositories.TagRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
