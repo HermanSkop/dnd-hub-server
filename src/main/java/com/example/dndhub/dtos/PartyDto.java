@@ -20,7 +20,7 @@ public class PartyDto implements Serializable {
     private String description;
     private int maxPlayers;
     private PartyDto.DurationDto duration;
-    private Edition edition;
+    private EditionDto edition;
     @Builder.Default
     private Set<PlayerDto> playersSaved = new HashSet<>();
     @Builder.Default
@@ -33,7 +33,7 @@ public class PartyDto implements Serializable {
      * Used by @Builder to validate the object
      */
     public PartyDto(int id, String name, String description, int maxPlayers, PartyDto.DurationDto duration,
-                    Edition edition, Set<PlayerDto> playersSaved, Set<PlayerDto> participatingPlayers, PlayerDto host,
+                    EditionDto edition, Set<PlayerDto> playersSaved, Set<PlayerDto> participatingPlayers, PlayerDto host,
                     Set<TagDto> tags) {
         this.id = id;
         this.name = name;
@@ -92,9 +92,9 @@ public class PartyDto implements Serializable {
         if (duration == null) {
             throw new IllegalArgumentException("Duration cannot be null");
         }
-        /*if (edition == null) { TODO Uncomment when edition is mandatory
+        if (edition == null) {
             throw new IllegalArgumentException("Edition cannot be null");
-        }*/
+        }
         if (host == null) {
             throw new IllegalArgumentException("Host cannot be null");
         }

@@ -27,7 +27,8 @@ public class Duration {
     @OneToOne(mappedBy = "duration")
     private Party party;
 
-    @PostConstruct
+    @PreUpdate
+    @PrePersist
     private void validateDuration() {
         if (startingDate.isAfter(endingDate)) {
             throw new IllegalArgumentException("Starting date must be before ending date");

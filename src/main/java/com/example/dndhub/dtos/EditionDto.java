@@ -1,39 +1,38 @@
-package com.example.dndhub.models.edition;
+package com.example.dndhub.dtos;
 
-import com.example.dndhub.models.Party;
-import jakarta.persistence.*;
+import com.example.dndhub.models.edition.EditionType;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@Setter
-@Entity
 @Builder
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Edition {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    protected int id;
-    @NotNull(message = "Name is mandatory")
-    @NotBlank(message = "Name is mandatory")
-    protected String name;
-    @Column(length = 5000)
-    protected String description;
+public class EditionDto implements Serializable {
+    @Setter
+    private int id;
+    private String name;
+    private String description;
     private Integer releaseYear;
-    @NotNull(message = "Type is mandatory")
-    @Enumerated(EnumType.STRING)
     private EditionType type;
+    @Builder.Default
+    private Set<PartyDto> parties = new HashSet<>();
 
-    @PrePersist
-    @PreUpdate
+    public EditionDto(int id, String name, String description, Integer releaseYear, EditionType type, Set<PartyDto> parties) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseYear = releaseYear;
+        this.type = type;
+        this.parties = parties;
+        validate();
+    }
+
     private void validate() {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name is mandatory");
@@ -56,10 +55,11 @@ public class Edition {
         if (releaseYear != null && releaseYear < 1974 && releaseYear > LocalDate.now().getYear()) {
             throw new IllegalArgumentException("Release year must be greater than 1974");
         }
+        if (parties == null) {
+            throw new IllegalArgumentException("Parties is mandatory");
+        }
+        if (parties.contains(null)) {
+            throw new IllegalArgumentException("Parties cannot contain null values");
+        }
     }
-
-    @ToString.Exclude
-    @Builder.Default
-    @OneToMany(mappedBy = "edition")
-    private Set<Party> parties = new HashSet<>();
 }

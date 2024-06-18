@@ -1,7 +1,10 @@
 package com.example.dndhub;
 
+import com.example.dndhub.dtos.EditionDto;
 import com.example.dndhub.dtos.PartyDto;
 import com.example.dndhub.dtos.PlayerDto;
+import com.example.dndhub.models.edition.EditionType;
+import com.example.dndhub.services.EditionService;
 import com.example.dndhub.services.PartyService;
 import com.example.dndhub.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,22 +20,30 @@ public class BootstrapData implements CommandLineRunner {
 
     private final PartyService partyService;
     private final PlayerService playerService;
+    private final EditionService editionService;
 
     @Autowired
-    public BootstrapData(PartyService partyService, PlayerService playerService) {
+    public BootstrapData(PartyService partyService, PlayerService playerService, EditionService editionService) {
         this.partyService = partyService;
         this.playerService = playerService;
+        this.editionService = editionService;
     }
 
     @Override
     public void run(String... args) {
+        EditionDto editionDto = EditionDto.builder()
+                .name("Dungeons & Dragons 5th Edition")
+                .releaseYear(2014)
+                .type(EditionType.OFFICIAL)
+                .build();
+        editionService.saveEdition(editionDto);
         HashSet<PlayerDto> players = createPlayers();
         HashSet<PartyDto> parties = createParties(players);
 
     }
 
     private HashSet<PartyDto> createParties(HashSet<PlayerDto> players) {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             PartyDto partyDto = PartyDto.builder()
                     .name("Party " + (i + 1))
                     .description("""
@@ -47,9 +58,10 @@ public class BootstrapData implements CommandLineRunner {
                             .startingDate(LocalDate.now())
                             .endingDate(LocalDate.now().plusDays(i + 1))
                             .build())
-                    .participatingPlayers(players.stream().skip(i*4+1).limit(5).collect(Collectors.toSet()))
-                    .host(players.stream().skip(i*4).findFirst().orElseThrow())
+                    .participatingPlayers(players.stream().skip(i * 4 + 1).limit(5).collect(Collectors.toSet()))
+                    .host(players.stream().skip(i * 4).findFirst().orElseThrow())
                     .playersSaved(new HashSet<>(players))
+                    .edition(editionService.getEditionById(1))
                     .build();
 
             partyService.saveParty(partyDto);
@@ -95,6 +107,22 @@ public class BootstrapData implements CommandLineRunner {
         players.add(createPlayer("chears", "password119", "chears.some@exmpl.com", "/avatars/2.png", "Chears thinks he is a great player"));
         players.add(createPlayer("dorin", "password120", "dorin.dorin@exmpl.com", "/avatars/3.png", "Just a player"));
         players.add(createPlayer("kali", "password121", "kali.k@exmpl.com", "/avatars/4.png", null));
+        players.add(createPlayer("lucy_bell", "password122", "lucy.bell@example.com", "/avatars/5.png", "Art lover and museum curator."));
+        players.add(createPlayer("max_robinson", "password123", "max.robinson@example.com", "/avatars/1.png", "Tech enthusiast and software developer."));
+        players.add(createPlayer("sophie_garcia", "password124", "sophie.garcia@example.com", "/avatars/2.png", "Nature photographer and wildlife conservationist."));
+        players.add(createPlayer("alex_turner", "password125", "alex.turner@example.com", "/avatars/3.png", "Music producer and DJ."));
+        players.add(createPlayer("mia_davis", "password126", "mia.davis@example.com", "/avatars/4.png", "Fitness coach and personal trainer."));
+        players.add(createPlayer("noah_clark", "password127", "noah.clark@example.com", "/avatars/5.png", "Adventure traveler and explorer."));
+        players.add(createPlayer("emily_hall", "password128", "emily.hall@example.com", "/avatars/1.png", "Fashion blogger and stylist."));
+        players.add(createPlayer("liam_wilson", "password129", "liam.wilson@example.com", "/avatars/2.png", "Entrepreneur and startup mentor."));
+        players.add(createPlayer("ava_morris", "password130", "ava.morris@example.com", "/avatars/3.png", "Book lover and literature enthusiast."));
+        players.add(createPlayer("owen_jackson", "password131", "owen.jackson@example.com", "/avatars/4.png", "Historian and researcher."));
+        players.add(createPlayer("ella_thomas", "password132", "ella.thomas@example.com", "/avatars/5.png", "DIY enthusiast and home decorator."));
+        players.add(createPlayer("mia_thompson", "password133", "mia.thompson@example.com", "/avatars/2.png", "Art student and aspiring painter."));
+        players.add(createPlayer("henry_carter", "password134", "henry.carter@example.com", "/avatars/3.png", "Music enthusiast and guitarist."));
+        players.add(createPlayer("ella_gomez", "password135", "ella.gomez@example.com", "/avatars/4.png", "Fitness instructor and yoga practitioner."));
+        players.add(createPlayer("leo_morgan", "password136", "leo.morgan@example.com", "/avatars/1.png", "Travel enthusiast and adventure seeker."));
+        players.add(createPlayer("amelia_reed", "password137", "amelia.reed@example.com", "/avatars/5.png", "Fashion designer and stylist."));
 
 
         for (PlayerDto player : players) {

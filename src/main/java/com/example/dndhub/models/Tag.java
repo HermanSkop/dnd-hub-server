@@ -30,5 +30,6 @@ public class Tag {
 
     @ManyToOne
     @ToString.Exclude
+    @NotNull(message = "Party is mandatory")
     private Party party;
 }

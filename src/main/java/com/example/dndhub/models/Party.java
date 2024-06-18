@@ -38,13 +38,8 @@ public class Party {
     @Min(1)
     private int maxPlayers;
 
-    @NotNull
     @OneToOne(cascade = CascadeType.ALL)
     private Duration duration;
-
-    @JoinColumn(name = "edition_id")
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    private Edition edition;
 
     @Builder.Default
     @JoinColumn(name = "tag_id")
@@ -55,18 +50,22 @@ public class Party {
     @Builder.Default
     @ToString.Exclude
     @JoinTable(name = "Party_players", joinColumns = @JoinColumn(name = "party_id"))
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private Set<Player> playersSaved = new HashSet<>();
 
     @Builder.Default
     @ToString.Exclude
     @JoinTable(name = "Party_participatedPlayers", joinColumns = @JoinColumn(name = "party_id"))
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private Set<Player> participatingPlayers = new LinkedHashSet<>();
 
-    @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @NotNull(message = "Host is mandatory")
+    @ManyToOne
     private Player host;
+
+    @NotNull(message = "Edition is mandatory")
+    @ManyToOne
+    private Edition edition;
 
     @PrePersist
     @PreUpdate

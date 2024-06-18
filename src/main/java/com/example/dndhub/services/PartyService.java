@@ -4,6 +4,7 @@ import com.example.dndhub.dtos.PartyDto;
 import com.example.dndhub.models.Duration;
 import com.example.dndhub.models.Party;
 import com.example.dndhub.models.user.Player;
+import com.example.dndhub.repositories.EditionRepository;
 import com.example.dndhub.repositories.PartyRepository;
 import com.example.dndhub.repositories.PlayerRepository;
 import com.example.dndhub.repositories.TagRepository;
@@ -20,12 +21,14 @@ public class PartyService {
     private final PlayerRepository playerRepository;
     private final PartyRepository partyRepository;
     private final TagRepository tagRepository;
+    private final EditionRepository editionRepository;
 
     @Autowired
-    public PartyService(PlayerRepository playerService, PartyRepository partyRepository, TagRepository tagRepository) {
+    public PartyService(PlayerRepository playerService, PartyRepository partyRepository, TagRepository tagRepository, EditionRepository editionRepository) {
         this.playerRepository = playerService;
         this.partyRepository = partyRepository;
         this.tagRepository = tagRepository;
+        this.editionRepository = editionRepository;
     }
 
     @Transactional
@@ -48,6 +51,8 @@ public class PartyService {
                         .collect(Collectors.toSet()))
                 .host(playerRepository.findById(partyDto.getHost().getId())
                         .orElseThrow(() -> new EntityNotFoundException("Host not found")))
+                .edition(editionRepository.findById(partyDto.getEdition().getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Edition not found")))
                 .tags(partyDto.getTags().stream()
                         .map(tagDto -> tagRepository.findById(tagDto.getId())
                                 .orElseThrow(() -> new EntityNotFoundException("Tag not found")))
@@ -65,14 +70,14 @@ public class PartyService {
 
     public Set<PartyDto> getAllParties() {
         return partyRepository.findAll().stream()
-                .map(this::getPartyDto)
+                .map(PartyService::getPartyDto)
                 .collect(Collectors.toSet());
     }
 
     @Transactional
     public Set<PartyDto> getAllPartiesDeep() {
         return partyRepository.findAll().stream()
-                .map(this::getPartyDtoDeep)
+                .map(PartyService::getPartyDtoDeep)
                 .collect(Collectors.toSet());
     }
 
@@ -86,7 +91,7 @@ public class PartyService {
         return getPartyDtoDeep(party);
     }
 
-    PartyDto getPartyDto(Party party) {
+    static PartyDto getPartyDto(Party party) {
         return PartyDto.builder()
                 .id(party.getId())
                 .name(party.getName())
@@ -99,7 +104,7 @@ public class PartyService {
                 .build();
     }
 
-    PartyDto getPartyDtoDeep(Party party) {
+    static PartyDto getPartyDtoDeep(Party party) {
         return PartyDto.builder()
                 .id(party.getId())
                 .name(party.getName())
@@ -113,6 +118,7 @@ public class PartyService {
                         .map(PlayerService::getPlayerDto)
                         .collect(Collectors.toSet()))
                 .host(PlayerService.getPlayerDto(party.getHost()))
+                .edition(EditionService.getEditionDto(party.getEdition()))
                 .playersSaved(party.getPlayersSaved().stream()
                         .map(PlayerService::getPlayerDto)
                         .collect(Collectors.toSet()))
