@@ -1,11 +1,11 @@
 package com.example.dndhub;
 
-import com.example.dndhub.dtos.EditionDto;
-import com.example.dndhub.dtos.PartyDto;
-import com.example.dndhub.dtos.PlayerDto;
+import com.example.dndhub.dtos.*;
 import com.example.dndhub.models.edition.EditionType;
+import com.example.dndhub.models.place.OnlinePlatformType;
 import com.example.dndhub.services.EditionService;
 import com.example.dndhub.services.PartyService;
+import com.example.dndhub.services.PlaceService;
 import com.example.dndhub.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -21,12 +21,14 @@ public class BootstrapData implements CommandLineRunner {
     private final PartyService partyService;
     private final PlayerService playerService;
     private final EditionService editionService;
+    private final PlaceService placeService;
 
     @Autowired
-    public BootstrapData(PartyService partyService, PlayerService playerService, EditionService editionService) {
+    public BootstrapData(PartyService partyService, PlayerService playerService, EditionService editionService, PlaceService placeService) {
         this.partyService = partyService;
         this.playerService = playerService;
         this.editionService = editionService;
+        this.placeService = placeService;
     }
 
     @Override
@@ -37,12 +39,31 @@ public class BootstrapData implements CommandLineRunner {
                 .type(EditionType.OFFICIAL)
                 .build();
         editionService.saveEdition(editionDto);
+        HashSet<PlaceDto> places = createPlaces();
         HashSet<PlayerDto> players = createPlayers();
-        HashSet<PartyDto> parties = createParties(players);
+        HashSet<PartyDto> parties = createParties(players, places);
 
     }
 
-    private HashSet<PartyDto> createParties(HashSet<PlayerDto> players) {
+    private HashSet<PlaceDto> createPlaces() {
+        HashSet<PlaceDto> places = new HashSet<>();
+        places.add(new OnlinePlatformDto(1, "Roll20", "https://roll20.net/", "/platforms/roll20.svg",
+                OnlinePlatformType.REGISTERED, new HashSet<>()));
+        places.add(new OnlinePlatformDto(2, "Foundry VTT", "https://foundryvtt.com/", "/platforms/foundry.svg",
+                OnlinePlatformType.REGISTERED, new HashSet<>()));
+        places.add(new OnlinePlatformDto(3, "D&D Beyond", "https://www.dndbeyond.com/", "/platforms/beyond.svg",
+                OnlinePlatformType.REGISTERED, new HashSet<>()));
+        places.add(new OnlinePlatformDto(4, "Discord", "https://discord.com/", "/platforms/discord.svg",
+                OnlinePlatformType.REGISTERED, new HashSet<>()));
+
+        for (PlaceDto place : places) {
+            place.setId(placeService.savePlace(place));
+        }
+
+        return places;
+    }
+
+    private HashSet<PartyDto> createParties(HashSet<PlayerDto> players, HashSet<PlaceDto> places) {
         for (int i = 0; i < 10; i++) {
             PartyDto partyDto = PartyDto.builder()
                     .name("Party " + (i + 1))
@@ -62,6 +83,7 @@ public class BootstrapData implements CommandLineRunner {
                     .host(players.stream().skip(i * 4).findFirst().orElseThrow())
                     .playersSaved(new HashSet<>(players))
                     .edition(editionService.getEditionById(1))
+                    .place(places.stream().skip(i % 4).findFirst().orElseThrow())
                     .build();
 
             partyService.saveParty(partyDto);

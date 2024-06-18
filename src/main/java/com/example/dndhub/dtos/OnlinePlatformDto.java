@@ -2,23 +2,19 @@ package com.example.dndhub.dtos;
 
 import com.example.dndhub.models.place.OnlinePlatformType;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Getter
-@Builder
-public class OnlinePlatformDto  implements Serializable {
-    private int id;
-    private String name;
+public class OnlinePlatformDto extends PlaceDto implements Serializable {
     private static int maxPlatformsPerPlayer = 10;
     private String link;
     private String iconPath;
     private OnlinePlatformType type;
 
-    OnlinePlatformDto(int id, String name, String link, String iconPath, OnlinePlatformType type) {
-        this.id = id;
-        this.name = name;
+    public OnlinePlatformDto(int id, String name, String link, String iconPath, OnlinePlatformType type, Set<PartyDto> parties) {
+        super(id, name, parties);
         this.link = link;
         this.iconPath = iconPath;
         this.type = type;

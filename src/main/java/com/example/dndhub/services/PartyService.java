@@ -4,10 +4,7 @@ import com.example.dndhub.dtos.PartyDto;
 import com.example.dndhub.models.Duration;
 import com.example.dndhub.models.Party;
 import com.example.dndhub.models.user.Player;
-import com.example.dndhub.repositories.EditionRepository;
-import com.example.dndhub.repositories.PartyRepository;
-import com.example.dndhub.repositories.PlayerRepository;
-import com.example.dndhub.repositories.TagRepository;
+import com.example.dndhub.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +19,15 @@ public class PartyService {
     private final PartyRepository partyRepository;
     private final TagRepository tagRepository;
     private final EditionRepository editionRepository;
+    private final PlaceRepository placeRepository;
 
     @Autowired
-    public PartyService(PlayerRepository playerService, PartyRepository partyRepository, TagRepository tagRepository, EditionRepository editionRepository) {
+    public PartyService(PlayerRepository playerService, PartyRepository partyRepository, TagRepository tagRepository, EditionRepository editionRepository, PlaceRepository placeRepository) {
         this.playerRepository = playerService;
         this.partyRepository = partyRepository;
         this.tagRepository = tagRepository;
         this.editionRepository = editionRepository;
+        this.placeRepository = placeRepository;
     }
 
     @Transactional
@@ -57,6 +56,8 @@ public class PartyService {
                         .map(tagDto -> tagRepository.findById(tagDto.getId())
                                 .orElseThrow(() -> new EntityNotFoundException("Tag not found")))
                         .collect(Collectors.toSet()))
+                .place(placeRepository.findById(partyDto.getPlace().getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Place not found")))
                 .build();
 
 
@@ -122,6 +123,10 @@ public class PartyService {
                 .playersSaved(party.getPlayersSaved().stream()
                         .map(PlayerService::getPlayerDto)
                         .collect(Collectors.toSet()))
+                .tags(party.getTags().stream()
+                        .map(TagService::getTagDto)
+                        .collect(Collectors.toSet()))
+                .place(PlaceService.getPlaceDto(party.getPlace()))
                 .build();
     }
 
@@ -158,6 +163,11 @@ public class PartyService {
 
         party.getHost().getHostedParties().remove(party);
         party.setHost(null);
+
+        party.getTags().forEach(tag -> tag.setParty(null));
+        party.getTags().clear();
+
+        party.setEdition(null);
 
         partyRepository.delete(party);
     }

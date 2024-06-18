@@ -1,6 +1,7 @@
 package com.example.dndhub.models;
 
 import com.example.dndhub.models.edition.Edition;
+import com.example.dndhub.models.place.Place;
 import com.example.dndhub.models.user.Player;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
@@ -66,6 +67,10 @@ public class Party {
     @NotNull(message = "Edition is mandatory")
     @ManyToOne
     private Edition edition;
+
+    @NotNull(message = "Place is mandatory")
+    @ManyToOne
+    private Place place;
 
     @PrePersist
     @PreUpdate

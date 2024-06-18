@@ -1,6 +1,5 @@
 package com.example.dndhub.dtos;
 
-import com.example.dndhub.models.edition.Edition;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
@@ -21,6 +20,7 @@ public class PartyDto implements Serializable {
     private int maxPlayers;
     private PartyDto.DurationDto duration;
     private EditionDto edition;
+    private PlaceDto place;
     @Builder.Default
     private Set<PlayerDto> playersSaved = new HashSet<>();
     @Builder.Default
@@ -33,7 +33,7 @@ public class PartyDto implements Serializable {
      * Used by @Builder to validate the object
      */
     public PartyDto(int id, String name, String description, int maxPlayers, PartyDto.DurationDto duration,
-                    EditionDto edition, Set<PlayerDto> playersSaved, Set<PlayerDto> participatingPlayers, PlayerDto host,
+                    EditionDto edition, PlaceDto place, Set<PlayerDto> playersSaved, Set<PlayerDto> participatingPlayers, PlayerDto host,
                     Set<TagDto> tags) {
         this.id = id;
         this.name = name;
@@ -41,6 +41,7 @@ public class PartyDto implements Serializable {
         this.maxPlayers = maxPlayers;
         this.duration = duration;
         this.edition = edition;
+        this.place = place;
         this.playersSaved = playersSaved;
         this.participatingPlayers = participatingPlayers;
         this.host = host;
@@ -94,6 +95,9 @@ public class PartyDto implements Serializable {
         }
         if (edition == null) {
             throw new IllegalArgumentException("Edition cannot be null");
+        }
+        if (place == null) {
+            throw new IllegalArgumentException("Place cannot be null");
         }
         if (host == null) {
             throw new IllegalArgumentException("Host cannot be null");

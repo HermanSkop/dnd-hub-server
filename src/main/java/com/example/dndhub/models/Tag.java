@@ -28,7 +28,7 @@ public class Tag {
     @NotBlank(message = "Icon is mandatory")
     private String iconPath;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @ToString.Exclude
     @NotNull(message = "Party is mandatory")
     private Party party;
