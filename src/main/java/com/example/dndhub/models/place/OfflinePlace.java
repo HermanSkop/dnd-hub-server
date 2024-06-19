@@ -16,6 +16,9 @@ import lombok.experimental.SuperBuilder;
 public class OfflinePlace extends Place {
     @Size(min = 1)
     private static int maxPlacesPerPlayer = 20;
+    /**
+     * Tells if the place is public place or private apartments
+     */
     private boolean isPublic;
 
     @OneToOne

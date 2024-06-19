@@ -1,6 +1,5 @@
 package com.example.dndhub.models;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -20,7 +19,7 @@ public class Duration {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private static short maxDaysDuration = 365;
-    @NotNull
+    @NotNull(message = "Starting date is required")
     private LocalDate startingDate;
     private LocalDate endingDate;
 

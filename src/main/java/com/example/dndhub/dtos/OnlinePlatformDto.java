@@ -8,8 +8,17 @@ import java.util.Set;
 
 @Getter
 public class OnlinePlatformDto extends PlaceDto implements Serializable {
+    /**
+     * The maximum number of platforms a player can have.
+     */
     private static int maxPlatformsPerPlayer = 10;
+    /**
+     * The link to the platform's website.
+     */
     private String link;
+    /**
+     * The path to the icon representing the platform.
+     */
     private String iconPath;
     private OnlinePlatformType type;
 

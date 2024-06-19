@@ -27,6 +27,10 @@ public class PartyController {
         this.playerService = playerService;
     }
 
+    /**
+     * @param id of the party to get
+     * @return the party with the given id
+     */
     @GetMapping(path = "/{id}")
     public ResponseEntity<PartyDto> getPartyById(@PathVariable("id") int id) {
         try {
@@ -37,11 +41,18 @@ public class PartyController {
         }
     }
 
+    /**
+     * @return all existing parties
+     */
     @GetMapping(path = "/all")
     public ResponseEntity<Iterable<PartyDto>> getAllParties() {
         return new ResponseEntity<>(partyService.getAllPartiesDeep(), HttpStatus.OK);
     }
 
+    /**
+     * Adds current player in session to a party
+     * @param id of the party to join
+     */
     @PostMapping(path = "/{id}/join")
     public ResponseEntity<PartyDto> joinParty(@PathVariable("id") int id) {
         try {
@@ -52,6 +63,10 @@ public class PartyController {
         }
     }
 
+    /**
+     * Removes current player in session from a party
+     * @param id of the party to leave
+     */
     @PostMapping(path = "/{id}/leave")
     public ResponseEntity<PartyDto> leaveParty(@PathVariable("id") int id) {
         try {
@@ -62,6 +77,12 @@ public class PartyController {
         }
     }
 
+    /**
+     * Kicks a player from a party
+     * @param id of the party
+     * @param playerId of the player to kick
+     * @return the party after the player has been kicked
+     */
     @PostMapping(path = "/{id}/kick")
     public ResponseEntity<PartyDto> kickPlayer(@PathVariable("id") int id, @RequestBody int playerId) {
         try {
@@ -69,8 +90,14 @@ public class PartyController {
             return new ResponseEntity<>(partyDto, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }    }
+        }
+    }
 
+    /**
+     * Deletes a party
+     * @param id of the party to delete
+     * @return HTTP status code: 200 if successful, 404 if party not found
+     */
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<HttpStatus> deleteParty(@PathVariable("id") int id) {
         try {

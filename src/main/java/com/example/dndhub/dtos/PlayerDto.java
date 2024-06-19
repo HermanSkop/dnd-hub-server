@@ -1,6 +1,6 @@
 package com.example.dndhub.dtos;
 
-import com.example.dndhub.models.user.User;
+import com.example.dndhub.configuration.AppConfig;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,6 +49,9 @@ public class PlayerDto implements Serializable {
         validate();
     }
 
+    /**
+     * Used by constructor to validate the object
+     */
     private void validate() {
         if (avatarPath == null || avatarPath.isBlank()) {
             throw new IllegalArgumentException("Avatar path is mandatory");
@@ -56,8 +59,14 @@ public class PlayerDto implements Serializable {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username is mandatory");
         }
+        if (!isUsernameValid(username)) {
+            throw new IllegalArgumentException("Username must be a valid username");
+        }
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("Password is mandatory");
+        }
+        if (!isPasswordValid(password)) {
+            throw new IllegalArgumentException("Password must be a valid password");
         }
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email is mandatory");
@@ -88,10 +97,40 @@ public class PlayerDto implements Serializable {
         }
     }
 
+    /**
+     * Validates email using a regex pattern
+     *
+     * @param email email to validate
+     * @return true if email is valid, false otherwise
+     */
     private boolean isMailValid(String email) {
-        String emailRegex = User.emailRegex;
+        String emailRegex = AppConfig.emailRegex;
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    /**
+     * Validates username using a regex pattern
+     * @param username username to validate
+     * @return true if username is valid, false otherwise
+     */
+    private boolean isUsernameValid(String username) {
+        String usernameRegex = AppConfig.usernameRegex;
+        Pattern pattern = Pattern.compile(usernameRegex);
+        Matcher matcher = pattern.matcher(username);
+        return matcher.matches();
+    }
+
+    /**
+     * Validates password using a regex pattern
+     * @param password password to validate
+     * @return true if password is valid, false otherwise
+     */
+    private boolean isPasswordValid(String password) {
+        String passwordRegex = AppConfig.passwordRegex;
+        Pattern pattern = Pattern.compile(passwordRegex);
+        Matcher matcher = pattern.matcher(password);
         return matcher.matches();
     }
 }

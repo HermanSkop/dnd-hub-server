@@ -1,5 +1,12 @@
 package com.example.dndhub.models.edition;
 
 public enum EditionType {
-    OFFICIAL, CUSTOM
+    /**
+     * Official edition registered in the system
+     */
+    OFFICIAL,
+    /**
+     * Custom edition created by the user
+     */
+    CUSTOM
 }

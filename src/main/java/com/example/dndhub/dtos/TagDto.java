@@ -4,14 +4,17 @@ import lombok.*;
 
 import java.io.Serializable;
 
-/**
- * DTO for {@link com.example.dndhub.models.Tag}
- */
 @Getter
 @Builder
 public class TagDto implements Serializable {
     private int id;
+    /**
+     * The label of the tag
+     */
     private String value;
+    /**
+     * The path to the icon shown next to the tag
+     */
     private String iconPath;
     private PartyDto party;
 

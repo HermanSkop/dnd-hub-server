@@ -15,11 +15,20 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OnlinePlatform extends Place {
+    /**
+     * The maximum number of platforms a player can have.
+     */
     @Size(min = 1)
     private static int maxPlatformsPerPlayer = 10;
+    /**
+     * The link to the platform's website.
+     */
     @NotNull(message = "Link is mandatory")
     @NotBlank(message = "Link is mandatory")
     private String link;
+    /**
+     * The path to the icon representing the platform.
+     */
     @NotNull(message = "Icon is mandatory")
     @NotBlank(message = "Icon is mandatory")
     private String iconPath;

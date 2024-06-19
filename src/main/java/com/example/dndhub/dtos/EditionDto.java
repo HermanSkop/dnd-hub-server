@@ -1,9 +1,6 @@
 package com.example.dndhub.dtos;
 
 import com.example.dndhub.models.edition.EditionType;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serializable;
@@ -17,12 +14,22 @@ public class EditionDto implements Serializable {
     @Setter
     private int id;
     private String name;
+    /**
+     * Full description of the setting and system. Must be at most 5000 characters.
+     * If the edition is official, this field must be null.
+     */
     private String description;
+    /**
+     * The year the edition was released. Must be null for custom editions.
+     */
     private Integer releaseYear;
     private EditionType type;
     @Builder.Default
     private Set<PartyDto> parties = new HashSet<>();
 
+    /**
+     * Used by @Builder to validate the fields.
+     */
     public EditionDto(int id, String name, String description, Integer releaseYear, EditionType type, Set<PartyDto> parties) {
         this.id = id;
         this.name = name;

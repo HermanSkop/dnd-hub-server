@@ -15,6 +15,9 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+/**
+ * This class is used to populate the database with some initial data when the application starts.
+ */
 @Component
 public class BootstrapData implements CommandLineRunner {
 

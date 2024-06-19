@@ -25,8 +25,15 @@ public class Edition {
     @NotNull(message = "Name is mandatory")
     @NotBlank(message = "Name is mandatory")
     protected String name;
+    /**
+     * Full description of the setting and system. Must be at most 5000 characters.
+     * If the edition is official, this field must be null.
+     */
     @Column(length = 5000)
     protected String description;
+    /**
+     * The year the edition was released. Must be null for custom editions.
+     */
     private Integer releaseYear;
     @NotNull(message = "Type is mandatory")
     @Enumerated(EnumType.STRING)

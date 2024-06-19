@@ -16,6 +16,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Represents a group of players to play a game. Here the game properties are defined.
+ */
 @Entity
 @Setter
 @Getter
@@ -24,6 +27,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Party {
+    /**
+     * The maximum number that can be set as the maximum number of players.
+     */
     @Size(min = 1)
     private static int maxPossiblePlayers = 99;
     @Id
@@ -32,13 +38,22 @@ public class Party {
     @NotNull(message = "Name is mandatory")
     @NotBlank(message = "Name is mandatory")
     private String name;
+    /**
+     * The description of the party. Must be at most 2000 characters long.
+     */
     @Column(length = 2000)
     @NotNull(message = "Description is mandatory")
     @NotBlank(message = "Description is mandatory")
     private String description;
+    /**
+     * The maximum number of players that can join the party.
+     */
     @Min(1)
     private int maxPlayers;
 
+    /**
+     * The duration of the game.
+     */
     @OneToOne(cascade = CascadeType.ALL)
     private Duration duration;
 
@@ -51,13 +66,13 @@ public class Party {
     @Builder.Default
     @ToString.Exclude
     @JoinTable(name = "Party_players", joinColumns = @JoinColumn(name = "party_id"))
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany()
     private Set<Player> playersSaved = new HashSet<>();
 
     @Builder.Default
     @ToString.Exclude
     @JoinTable(name = "Party_participatedPlayers", joinColumns = @JoinColumn(name = "party_id"))
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany()
     private Set<Player> participatingPlayers = new LinkedHashSet<>();
 
     @NotNull(message = "Host is mandatory")
@@ -68,10 +83,16 @@ public class Party {
     @ManyToOne
     private Edition edition;
 
+    /**
+     * The place where the game will take place.
+     */
     @NotNull(message = "Place is mandatory")
     @ManyToOne
     private Place place;
 
+    /**
+     * Validates the party before it is persisted.
+     */
     @PrePersist
     @PreUpdate
     public void validate() {

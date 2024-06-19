@@ -11,15 +11,27 @@ import java.util.Set;
 @Getter
 @Builder
 public class PartyDto implements Serializable {
+    /**
+     * The maximum number that can be set as the maximum number of players.
+     */
     @Min(1)
     private static int maxPossiblePlayers = 99;
 
     private int id;
     private String name;
     private String description;
+    /**
+     * The maximum number of players that can join the party.
+     */
     private int maxPlayers;
+    /**
+     * The duration of the game.
+     */
     private PartyDto.DurationDto duration;
     private EditionDto edition;
+    /**
+     * The place where the party will take place.
+     */
     private PlaceDto place;
     @Builder.Default
     private Set<PlayerDto> playersSaved = new HashSet<>();
@@ -55,6 +67,9 @@ public class PartyDto implements Serializable {
         private int id;
         private static short maxDaysDuration = 365;
         private LocalDate startingDate;
+        /**
+         * The date when the party ends. Can be null and must be after the starting date.
+         */
         private LocalDate endingDate;
 
         /**
@@ -66,7 +81,6 @@ public class PartyDto implements Serializable {
             this.endingDate = endingDate;
             validateDuration();
         }
-
         private void validateDuration() {
             if (startingDate == null) {
                 throw new IllegalArgumentException("Starting date cannot be null");

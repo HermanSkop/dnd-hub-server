@@ -10,9 +10,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * DTO for {@link com.example.dndhub.models.place.Place}
- */
 @Getter
 public abstract class PlaceDto implements Serializable {
     @Setter
