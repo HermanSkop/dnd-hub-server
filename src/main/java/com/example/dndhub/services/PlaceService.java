@@ -2,7 +2,6 @@ package com.example.dndhub.services;
 
 import com.example.dndhub.dtos.OnlinePlatformDto;
 import com.example.dndhub.dtos.PlaceDto;
-import com.example.dndhub.models.place.OfflinePlace;
 import com.example.dndhub.models.place.OnlinePlatform;
 import com.example.dndhub.models.place.Place;
 import com.example.dndhub.repositories.PlaceRepository;
@@ -20,6 +19,11 @@ public class PlaceService {
         this.placeRepository = placeRepository;
     }
 
+    /**
+     * Converts a Place entity to a PlaceDto
+     * @param place Place entity
+     * @return PlaceDto
+     */
     public static PlaceDto getPlaceDto(Place place) {
         if (place instanceof OnlinePlatform onlinePlatform) {
             return new OnlinePlatformDto(onlinePlatform.getId(), onlinePlatform.getName(), onlinePlatform.getLink(),
@@ -29,6 +33,11 @@ public class PlaceService {
         }
     }
 
+    /**
+     * Converts a Place entity to a PlaceDto with associations included
+     * @param place Place entity
+     * @return PlaceDto
+     */
     public static PlaceDto getPlaceDtoDeep(Place place) {
         if (place instanceof OnlinePlatform onlinePlatform) {
             return new OnlinePlatformDto(onlinePlatform.getId(), onlinePlatform.getName(), onlinePlatform.getLink(),
@@ -41,6 +50,11 @@ public class PlaceService {
         }
     }
 
+    /**
+     * Saves a place entity
+     * @param placeDto PlaceDto
+     * @return id of the saved place
+     */
     public int savePlace(PlaceDto placeDto) {
         if (placeDto instanceof OnlinePlatformDto onlinePlatformDto) {
             OnlinePlatform place = OnlinePlatform.builder()

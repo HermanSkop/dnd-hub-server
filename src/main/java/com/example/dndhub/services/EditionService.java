@@ -22,6 +22,11 @@ public class EditionService {
         this.editionRepository = editionRepository;
     }
 
+    /**
+     * Converts an Edition entity to an EditionDto
+     * @param edition the Edition entity to convert
+     * @return the EditionDto
+     */
     public static EditionDto getEditionDto(Edition edition) {
         return EditionDto.builder()
                 .id(edition.getId())
@@ -31,6 +36,12 @@ public class EditionService {
                 .type(edition.getType())
                 .build();
     }
+
+    /**
+     * Converts an Edition entity to an EditionDto with associations included
+     * @param edition the Edition entity to convert
+     * @return the EditionDto
+     */
     public static EditionDto getEditionDtoDeep(Edition edition) {
         return EditionDto.builder()
                 .id(edition.getId())
@@ -44,8 +55,11 @@ public class EditionService {
                 .build();
     }
 
-
-
+    /**
+     * Saves an EditionDto to the database
+     * @param editionDto the EditionDto to save
+     * @return the id of the saved Edition
+     */
     @Transactional
     public int saveEdition(EditionDto editionDto) {
         Edition edition = Edition.builder()
@@ -61,6 +75,11 @@ public class EditionService {
         return editionRepository.save(edition).getId();
     }
 
+    /**
+     * Fetches an EditionDto from the database by id
+     * @param id the EditionDto to fetch
+     * @return the fetched EditionDto
+     */
     public EditionDto getEditionById(int id) {
         Edition edition = editionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Edition not found"));

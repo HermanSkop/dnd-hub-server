@@ -19,6 +19,11 @@ public class PlayerService {
         this.playerRepository = playerRepository;
     }
 
+    /**
+     * Save a player to the database
+     * @param playerDto the player to save
+     * @return the id of the saved player
+     */
     public int savePlayer(PlayerDto playerDto) {
         Player player = Player.builder()
                 .username(playerDto.getUsername())
@@ -37,6 +42,10 @@ public class PlayerService {
         return player.getId();
     }
 
+    /**
+     * Get all players from the database
+     * @return a set of all players
+     */
     public Set<PlayerDto> getAllPlayers() {
         return playerRepository.findAll().stream()
                 .map(player -> PlayerDto.builder()
@@ -51,6 +60,11 @@ public class PlayerService {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Get a player by id
+     * @param id the id of the player
+     * @return the player with the given id
+     */
     public PlayerDto getPlayerById(int id) {
         Player player = playerRepository.findById(id).orElseThrow(() -> new RuntimeException("Player not found"));
         return PlayerDto.builder()
@@ -64,6 +78,11 @@ public class PlayerService {
                 .build();
     }
 
+    /**
+     * Convert a player entity to a player dto
+     * @param player the player entity
+     * @return the player dto
+     */
     public static PlayerDto getPlayerDto(Player player) {
         if (player == null) {
             return null;
