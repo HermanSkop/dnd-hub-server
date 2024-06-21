@@ -35,6 +35,6 @@ public class Address {
     @NotBlank(message = "Building number is mandatory")
     private String buildingNumber;
 
-    @OneToOne(mappedBy = "address", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "address")
     private OfflinePlace offlinePlace;
 }

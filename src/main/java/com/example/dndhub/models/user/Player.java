@@ -37,4 +37,17 @@ public class Player extends User {
     @Builder.Default
     @OneToMany(mappedBy = "host")
     private Set<Party> hostedParties = new HashSet<>();
+
+    @PrePersist
+    @PreUpdate
+    public void validate() {
+        super.validate();
+        for (Party party : participatedParties) {
+            for (Party hostedParty : hostedParties) {
+                if (party.equals(hostedParty)) {
+                    throw new IllegalArgumentException("A player cannot participate in a party they are hosting");
+                }
+            }
+        }
+    }
 }

@@ -12,7 +12,6 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class OfflinePlace extends Place {
     @Size(min = 1)
     private static int maxPlacesPerPlayer = 20;
@@ -21,6 +20,6 @@ public class OfflinePlace extends Place {
      */
     private boolean isPublic;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Address address;
 }

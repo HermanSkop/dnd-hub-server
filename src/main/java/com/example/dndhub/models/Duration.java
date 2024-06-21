@@ -23,35 +23,20 @@ public class Duration {
     private LocalDate startingDate;
     private LocalDate endingDate;
 
+    @NotNull(message = "Party is required")
     @OneToOne(mappedBy = "duration")
     private Party party;
 
     @PreUpdate
     @PrePersist
-    private void validateDuration() {
-        if (startingDate.isAfter(endingDate)) {
-            throw new IllegalArgumentException("Starting date must be before ending date");
+    private void validate() {
+        if (endingDate != null) {
+            if (startingDate.isAfter(endingDate)) {
+                throw new IllegalArgumentException("Starting date must be before ending date");
+            }
+            if (startingDate.plusDays(maxDaysDuration).isBefore(endingDate)) {
+                throw new IllegalArgumentException("Duration must be less than " + maxDaysDuration + " days");
+            }
         }
-        if (startingDate.plusDays(maxDaysDuration).isBefore(endingDate)) {
-            throw new IllegalArgumentException("Duration must be less than " + maxDaysDuration + " days");
-        }
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Duration duration = (Duration) o;
-
-        return id == duration.id;
-    }
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

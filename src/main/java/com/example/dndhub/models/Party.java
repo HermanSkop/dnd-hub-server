@@ -54,25 +54,25 @@ public class Party {
     /**
      * The duration of the game.
      */
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @NotNull(message = "Duration is mandatory")
     private Duration duration;
 
     @Builder.Default
-    @JoinColumn(name = "tag_id")
-    @OneToMany(cascade = CascadeType.ALL)
     @ToString.Exclude
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Tag> tags = new HashSet<>();
 
+    @ManyToMany
     @Builder.Default
     @ToString.Exclude
-    @JoinTable(name = "Party_players", joinColumns = @JoinColumn(name = "party_id"))
-    @ManyToMany()
+    @JoinTable(name = "Players_Saved_Parties")
     private Set<Player> playersSaved = new HashSet<>();
 
+    @ManyToMany
     @Builder.Default
     @ToString.Exclude
-    @JoinTable(name = "Party_participatedPlayers", joinColumns = @JoinColumn(name = "party_id"))
-    @ManyToMany()
+    @JoinTable(name = "Players_Participating_Parties")
     private Set<Player> participatingPlayers = new LinkedHashSet<>();
 
     @NotNull(message = "Host is mandatory")
@@ -102,24 +102,5 @@ public class Party {
         if (participatingPlayers.contains(host)) {
             throw new IllegalArgumentException("Host cannot participate their own party");
         }
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Party party = (Party) o;
-
-        return id == party.id;
-    }
-
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

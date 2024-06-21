@@ -50,6 +50,10 @@ public class PlaceService {
         }
     }
 
+    public void deletePlace(int id) {
+        placeRepository.deleteById(id);
+    }
+
     /**
      * Saves a place entity
      * @param placeDto PlaceDto

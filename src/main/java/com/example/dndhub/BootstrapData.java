@@ -3,6 +3,8 @@ package com.example.dndhub;
 import com.example.dndhub.dtos.*;
 import com.example.dndhub.models.edition.EditionType;
 import com.example.dndhub.models.place.OnlinePlatformType;
+import com.example.dndhub.repositories.PlaceRepository;
+import com.example.dndhub.repositories.PlayerRepository;
 import com.example.dndhub.services.EditionService;
 import com.example.dndhub.services.PartyService;
 import com.example.dndhub.services.PlaceService;
@@ -25,17 +27,22 @@ public class BootstrapData implements CommandLineRunner {
     private final PlayerService playerService;
     private final EditionService editionService;
     private final PlaceService placeService;
+    private final PlayerRepository playerRepository;
 
     @Autowired
-    public BootstrapData(PartyService partyService, PlayerService playerService, EditionService editionService, PlaceService placeService) {
+    public BootstrapData(PartyService partyService, PlayerService playerService, EditionService editionService, PlaceService placeService, PlayerRepository playerRepository, PlaceRepository placeRepository) {
         this.partyService = partyService;
         this.playerService = playerService;
         this.editionService = editionService;
         this.placeService = placeService;
+        this.playerRepository = playerRepository;
     }
 
     @Override
     public void run(String... args) {
+        if (playerRepository.count() > 0) {
+            return;
+        }
         EditionDto editionDto = EditionDto.builder()
                 .name("Dungeons & Dragons 5th Edition")
                 .releaseYear(2014)
@@ -45,7 +52,6 @@ public class BootstrapData implements CommandLineRunner {
         HashSet<PlaceDto> places = createPlaces();
         HashSet<PlayerDto> players = createPlayers();
         HashSet<PartyDto> parties = createParties(players, places);
-
     }
 
     private HashSet<PlaceDto> createPlaces() {

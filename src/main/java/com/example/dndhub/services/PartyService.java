@@ -64,7 +64,7 @@ public class PartyService {
                 .place(placeRepository.findById(partyDto.getPlace().getId())
                         .orElseThrow(() -> new EntityNotFoundException("Place not found")))
                 .build();
-
+        party.getDuration().setParty(party);
 
         if (partyDto.getId() != 0) {
             party.setId(partyDto.getId());

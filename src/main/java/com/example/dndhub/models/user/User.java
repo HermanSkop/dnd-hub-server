@@ -56,9 +56,7 @@ public abstract class User {
     /**
      * Validates the object before persisting it.
      */
-    @PrePersist
-    @PreUpdate
-    private void validate() {
+    void validate() {
         if (registrationDate.isAfter(LocalDate.now())) {
             throw new IllegalStateException("Registration date must be in the past");
         }

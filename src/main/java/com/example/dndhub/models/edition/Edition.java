@@ -42,12 +42,6 @@ public class Edition {
     @PrePersist
     @PreUpdate
     private void validate() {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name is mandatory");
-        }
-        if (type == null) {
-            throw new IllegalArgumentException("Type is mandatory");
-        }
         if (type == EditionType.CUSTOM){
             if (description == null || description.isBlank())
                 throw new IllegalArgumentException("Description is mandatory");

@@ -13,8 +13,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@SuperBuilder
 @ToString
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class Place {
@@ -25,8 +25,8 @@ public abstract class Place {
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-
     @ToString.Exclude
     @Builder.Default
     @OneToMany(mappedBy = "place")
-    private Set<Party> parties = new HashSet<>();}
+    private Set<Party> parties = new HashSet<>();
+}
