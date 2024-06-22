@@ -1,33 +1,40 @@
 package com.example.dndhub.dtos;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.example.dndhub.configuration.AppConfig;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Value;
 
-import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
-public abstract class PlaceDto implements Serializable {
+@NoArgsConstructor
+public class PlaceDto{
     @Setter
     int id;
     String name;
-    Set<PartyDto> parties = new HashSet<>();
+    @JsonBackReference
+    Set<PartyDetailsDto> parties;
 
-    public PlaceDto(int id, String name, Set<PartyDto> parties) {
-        this.id = id;
+    public void setName(String name) {
+        if (name == null || name.isBlank())
+            throw new IllegalArgumentException("Name cannot be null or blank");
+        if (name.length() < AppConfig.minPlaceNameLength || name.length() > AppConfig.maxPlaceNameLength)
+            throw new IllegalArgumentException("Name must be between " + AppConfig.minPlaceNameLength + " and "
+                    + AppConfig.maxPlaceNameLength + " characters long");
         this.name = name;
-        if (parties != null)
-            this.parties = parties;
-        validate();
     }
 
-    private void validate() {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name is mandatory");
-        }
+    public void setParties(Set<PartyDetailsDto> parties) {
+        this.parties = Objects.requireNonNullElseGet(parties, HashSet::new);
+        if (parties.contains(null))
+            this.parties = new HashSet<>();
+    }
+
+    public HashSet<PartyDetailsDto> getParties() {
+        return new HashSet<>(parties);
     }
 }

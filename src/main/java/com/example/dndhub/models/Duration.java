@@ -18,7 +18,7 @@ public class Duration {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private static short maxDaysDuration = 365;
+    public static short maxDaysDuration = 365;
     @NotNull(message = "Starting date is required")
     private LocalDate startingDate;
     private LocalDate endingDate;

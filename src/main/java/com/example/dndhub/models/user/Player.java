@@ -31,7 +31,7 @@ public class Player extends User {
     @ToString.Exclude
     @Builder.Default
     @ManyToMany(mappedBy = "participatingPlayers")
-    private Set<Party> participatedParties = new HashSet<>();
+    private Set<Party> participatingParties = new HashSet<>();
 
     @ToString.Exclude
     @Builder.Default
@@ -42,7 +42,7 @@ public class Player extends User {
     @PreUpdate
     public void validate() {
         super.validate();
-        for (Party party : participatedParties) {
+        for (Party party : participatingParties) {
             for (Party hostedParty : hostedParties) {
                 if (party.equals(hostedParty)) {
                     throw new IllegalArgumentException("A player cannot participate in a party they are hosting");

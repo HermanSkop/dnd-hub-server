@@ -1,5 +1,6 @@
 package com.example.dndhub.models;
 
+import com.example.dndhub.configuration.AppConfig;
 import com.example.dndhub.models.edition.Edition;
 import com.example.dndhub.models.place.Place;
 import com.example.dndhub.models.user.Player;
@@ -31,19 +32,22 @@ public class Party {
      * The maximum number that can be set as the maximum number of players.
      */
     @Size(min = 1)
-    private static int maxPossiblePlayers = 99;
+    public static int maxPossiblePlayers = 99;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @NotNull(message = "Name is mandatory")
     @NotBlank(message = "Name is mandatory")
+    @Size(min = AppConfig.minPartyNameLength, max = AppConfig.maxPartyNameLength,
+            message = "Name must be between 3 and 20 characters long")
     private String name;
     /**
      * The description of the party. Must be at most 2000 characters long.
      */
-    @Column(length = 2000)
+    @Column(length = AppConfig.maxPartyDescriptionLength)
     @NotNull(message = "Description is mandatory")
     @NotBlank(message = "Description is mandatory")
+    @Size(max = AppConfig.maxPartyDescriptionLength, message = "Description must be at most 2000 characters long")
     private String description;
     /**
      * The maximum number of players that can join the party.

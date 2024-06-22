@@ -1,10 +1,8 @@
 package com.example.dndhub.models.user;
 
+import com.example.dndhub.configuration.AppConfig;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -29,6 +27,7 @@ public abstract class User {
      */
     @NotNull(message = "Username is mandatory")
     @NotBlank(message = "Username is mandatory")
+    @Size(min = 3, max = maxUsernameLength, message = "Username must be between 3 and 20 characters long")
     @Pattern(regexp = usernameRegex, message = "Username must be between 3 and 20 characters long and contain only letters, numbers, and the following special characters: _+&*-")
     private String username;
     /**

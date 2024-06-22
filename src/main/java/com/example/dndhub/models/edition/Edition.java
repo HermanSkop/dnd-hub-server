@@ -1,9 +1,11 @@
 package com.example.dndhub.models.edition;
 
+import com.example.dndhub.configuration.AppConfig;
 import com.example.dndhub.models.Party;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -24,12 +26,14 @@ public class Edition {
     protected int id;
     @NotNull(message = "Name is mandatory")
     @NotBlank(message = "Name is mandatory")
+    @Size(min = AppConfig.minEditionNameLength, max = AppConfig.maxEditionNameLength)
     protected String name;
     /**
      * Full description of the setting and system. Must be at most 5000 characters.
      * If the edition is official, this field must be null.
      */
-    @Column(length = 5000)
+    @Column(length = AppConfig.maxEditionDescriptionLength)
+    @Size(max = AppConfig.maxEditionDescriptionLength)
     protected String description;
     /**
      * The year the edition was released. Must be null for custom editions.

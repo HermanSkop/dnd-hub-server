@@ -1,9 +1,11 @@
 package com.example.dndhub.models.place;
 
+import com.example.dndhub.configuration.AppConfig;
 import com.example.dndhub.models.Party;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -23,6 +25,7 @@ public abstract class Place {
     private int id;
     @NotNull(message = "Name is mandatory")
     @NotBlank(message = "Name is mandatory")
+    @Size(min = AppConfig.minPlaceNameLength, max = AppConfig.maxPlaceNameLength)
     private String name;
 
     @ToString.Exclude

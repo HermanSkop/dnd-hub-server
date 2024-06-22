@@ -1,14 +1,17 @@
 package com.example.dndhub;
 
-import com.example.dndhub.dtos.*;
+import com.example.dndhub.models.Duration;
+import com.example.dndhub.models.Party;
+import com.example.dndhub.models.edition.Edition;
 import com.example.dndhub.models.edition.EditionType;
+import com.example.dndhub.models.place.OnlinePlatform;
 import com.example.dndhub.models.place.OnlinePlatformType;
+import com.example.dndhub.models.place.Place;
+import com.example.dndhub.models.user.Player;
+import com.example.dndhub.repositories.EditionRepository;
+import com.example.dndhub.repositories.PartyRepository;
 import com.example.dndhub.repositories.PlaceRepository;
 import com.example.dndhub.repositories.PlayerRepository;
-import com.example.dndhub.services.EditionService;
-import com.example.dndhub.services.PartyService;
-import com.example.dndhub.services.PlaceService;
-import com.example.dndhub.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -23,18 +26,17 @@ import java.util.stream.Collectors;
 @Component
 public class BootstrapData implements CommandLineRunner {
 
-    private final PartyService partyService;
-    private final PlayerService playerService;
-    private final EditionService editionService;
-    private final PlaceService placeService;
+    private final PartyRepository partyRepository;
     private final PlayerRepository playerRepository;
+    private final EditionRepository editionRepository;
+    private final PlaceRepository placeRepository;
 
     @Autowired
-    public BootstrapData(PartyService partyService, PlayerService playerService, EditionService editionService, PlaceService placeService, PlayerRepository playerRepository, PlaceRepository placeRepository) {
-        this.partyService = partyService;
-        this.playerService = playerService;
-        this.editionService = editionService;
-        this.placeService = placeService;
+    public BootstrapData(PartyRepository partyRepository, EditionRepository editionRepository, PlaceRepository placeRepository,
+                         PlayerRepository playerRepository) {
+        this.partyRepository = partyRepository;
+        this.editionRepository = editionRepository;
+        this.placeRepository = placeRepository;
         this.playerRepository = playerRepository;
     }
 
@@ -43,38 +45,55 @@ public class BootstrapData implements CommandLineRunner {
         if (playerRepository.count() > 0) {
             return;
         }
-        EditionDto editionDto = EditionDto.builder()
+        Edition edition = Edition.builder()
                 .name("Dungeons & Dragons 5th Edition")
                 .releaseYear(2014)
                 .type(EditionType.OFFICIAL)
                 .build();
-        editionService.saveEdition(editionDto);
-        HashSet<PlaceDto> places = createPlaces();
-        HashSet<PlayerDto> players = createPlayers();
-        HashSet<PartyDto> parties = createParties(players, places);
+        edition.setId(editionRepository.save(edition).getId());
+        HashSet<Place> places = createPlaces();
+        HashSet<Player> players = createPlayers();
+        HashSet<Party> parties = createParties(players, places);
     }
 
-    private HashSet<PlaceDto> createPlaces() {
-        HashSet<PlaceDto> places = new HashSet<>();
-        places.add(new OnlinePlatformDto(1, "Roll20", "https://roll20.net/", "/platforms/roll20.svg",
-                OnlinePlatformType.REGISTERED, new HashSet<>()));
-        places.add(new OnlinePlatformDto(2, "Foundry VTT", "https://foundryvtt.com/", "/platforms/foundry.svg",
-                OnlinePlatformType.REGISTERED, new HashSet<>()));
-        places.add(new OnlinePlatformDto(3, "D&D Beyond", "https://www.dndbeyond.com/", "/platforms/beyond.svg",
-                OnlinePlatformType.REGISTERED, new HashSet<>()));
-        places.add(new OnlinePlatformDto(4, "Discord", "https://discord.com/", "/platforms/discord.svg",
-                OnlinePlatformType.REGISTERED, new HashSet<>()));
+    private HashSet<Place> createPlaces() {
+        HashSet<Place> places = new HashSet<>();
+        places.add(OnlinePlatform.builder()
+                .name("Roll20")
+                .link("https://roll20.net/")
+                .iconPath("/platforms/roll20.svg")
+                .type(OnlinePlatformType.REGISTERED)
+                .parties(new HashSet<>())
+                .build());
+        places.add(OnlinePlatform.builder()
+                .name("Foundry VTT")
+                .link("https://foundryvtt.com/")
+                .iconPath("/platforms/foundry.svg")
+                .type(OnlinePlatformType.REGISTERED)
+                .parties(new HashSet<>())
+                .build());
+        places.add(OnlinePlatform.builder()
+                .name("D&D Beyond")
+                .link("https://www.dndbeyond.com/")
+                .iconPath("/platforms/beyond.svg")
+                .type(OnlinePlatformType.REGISTERED)
+                .parties(new HashSet<>())
+                .build());
+        places.add(OnlinePlatform.builder()
+                .name("Discord")
+                .link("https://discord.com/")
+                .iconPath("/platforms/discord.svg")
+                .type(OnlinePlatformType.REGISTERED)
+                .parties(new HashSet<>())
+                .build());
 
-        for (PlaceDto place : places) {
-            place.setId(placeService.savePlace(place));
-        }
-
-        return places;
+        return new HashSet<>(placeRepository.saveAll(places));
     }
 
-    private HashSet<PartyDto> createParties(HashSet<PlayerDto> players, HashSet<PlaceDto> places) {
+    private HashSet<Party> createParties(HashSet<Player> players, HashSet<Place> places) {
+        HashSet<Party> parties = new HashSet<>();
         for (int i = 0; i < 10; i++) {
-            PartyDto partyDto = PartyDto.builder()
+            Party party = Party.builder()
                     .name("Party " + (i + 1))
                     .description("""
                             "Phandalver: Forge of Destiny" is a thrilling Dungeons & Dragons campaign set in the vast and vibrant world of Faerûn.
@@ -84,82 +103,503 @@ public class BootstrapData implements CommandLineRunner {
                                                        \n
                             With rich storytelling, dynamic characters, and a blend of exploration, combat, and role-playing, "Phandalver" promises an immersive gaming experience where every choice matters. Venture forth, brave hero, and carve your legend in the annals of history.""")
                     .maxPlayers(i + 5)
-                    .duration(PartyDto.DurationDto.builder()
-                            .startingDate(LocalDate.now())
-                            .endingDate(LocalDate.now().plusDays(i + 1))
+                    .duration(Duration.builder()
+                            .startingDate(LocalDate.now().plusDays(i))
+                            .endingDate(LocalDate.now().plusDays(i * 7))
                             .build())
                     .participatingPlayers(players.stream().skip(i * 4 + 1).limit(5).collect(Collectors.toSet()))
                     .host(players.stream().skip(i * 4).findFirst().orElseThrow())
                     .playersSaved(new HashSet<>(players))
-                    .edition(editionService.getEditionById(1))
+                    .edition(editionRepository.findById(1).orElseThrow())
                     .place(places.stream().skip(i % 4).findFirst().orElseThrow())
                     .build();
-
-            partyService.saveParty(partyDto);
+            party.getDuration().setParty(party);
+            parties.add(partyRepository.save(party));
         }
-
-        return new HashSet<>(partyService.getAllPartiesDeep());
+        return parties;
     }
 
-    private PlayerDto createPlayer(String username, String password, String email, String avatarPath, String biography) {
-        return PlayerDto.builder()
-                .username(username)
-                .password(password)
-                .email(email)
+    private HashSet<Player> createPlayers() {
+        HashSet<Player> players = new HashSet<>();
+        players.add(Player.builder()
+                .username("john_doe")
+                .password("password123")
+                .email("john.doeex@am.ple")
+                .avatarPath("/avatars/1.png")
+                .biography("Avid gamer and tech enthusiast.")
                 .registrationDate(LocalDate.now())
-                .avatarPath(avatarPath)
-                .biography(biography)
-                .build();
-    }
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
 
-    private HashSet<PlayerDto> createPlayers() {
-        HashSet<PlayerDto> players = new HashSet<>();
-        players.add(createPlayer("john_doe", "password123", "john.doeex@am.ple", "/avatars/1.png", "Avid gamer and tech enthusiast."));
-        players.add(createPlayer("jane_smith", "password456", "jane.smith@example.com", "/avatars/2.png", "Loves outdoor adventures and hiking."));
-        players.add(createPlayer("alice_jones", "password789", "alice.jones@example.com", "/avatars/3.png", "Passionate about cooking and baking."));
-        players.add(createPlayer("bob_brown", "password101", "bob.brown@example.com", "/avatars/4.png", "Enjoys painting and creating art."));
-        players.add(createPlayer("charlie_davis", "password102", "charlie.davis@example.com", "/avatars/5.png", "Fitness trainer and health coach."));
-        players.add(createPlayer("david_ellis", "password103", "david.ellis@example.com", "/avatars/1.png", "Professional photographer."));
-        players.add(createPlayer("eva_frank", "password104", "eva.frank@example.com", "/avatars/2.png", "Software developer and tech geek."));
-        players.add(createPlayer("george_hall", "password105", "george.hall@example.com", "/avatars/3.png", "Music lover and amateur guitarist."));
-        players.add(createPlayer("hannah_king", "password106", "hannah.king@example.com", "/avatars/4.png", "Bookworm and aspiring writer."));
-        players.add(createPlayer("ian_lee", "password107", "ian.lee@example.com", "/avatars/5.png", "History buff and museum guide."));
-        players.add(createPlayer("jack_miller", "password108", "jack.miller@example.com", "/avatars/1.png", "Nature lover and environmentalist."));
-        players.add(createPlayer("kate_nelson", "password109", "kate.nelson@example.com", "/avatars/2.png", "Marketing specialist and social media guru."));
-        players.add(createPlayer("liam_owen", "password110", "liam.owen@example.com", "/avatars/3.png", "Startup founder and entrepreneur."));
-        players.add(createPlayer("maria_perez", "password111", "maria.perez@example.com", "/avatars/4.png", "Travel blogger and photographer."));
-        players.add(createPlayer("nathan_quinn", "password112", "nathan.quinn@example.com", "/avatars/5.png", "Pet lover and animal rescue volunteer."));
-        players.add(createPlayer("olivia_roberts", "password113", "olivia.roberts@example.com", "/avatars/1.png", "DIY enthusiast and handyman."));
-        players.add(createPlayer("peter_smith", "password114", "peter.smith@example.com", "/avatars/2.png", "Gamer and eSports competitor."));
-        players.add(createPlayer("quinn_taylor", "password115", "quinn.taylor@example.com", "/avatars/3.png", "Fitness enthusiast and marathon runner."));
-        players.add(createPlayer("rachel_umpstead", "password116", "rachel.umpstead@example.com", "/avatars/4.png", "Fashion designer and stylist."));
-        players.add(createPlayer("steven_valdez", "password117", "steven.valdez@example.com", "/avatars/5.png", "Science teacher and astronomy fan."));
-        players.add(createPlayer("arthas", "password118", "arthas.some@exmpl.com", "/avatars/1.png", "Arthas is a great player"));
-        players.add(createPlayer("chears", "password119", "chears.some@exmpl.com", "/avatars/2.png", "Chears thinks he is a great player"));
-        players.add(createPlayer("dorin", "password120", "dorin.dorin@exmpl.com", "/avatars/3.png", "Just a player"));
-        players.add(createPlayer("kali", "password121", "kali.k@exmpl.com", "/avatars/4.png", null));
-        players.add(createPlayer("lucy_bell", "password122", "lucy.bell@example.com", "/avatars/5.png", "Art lover and museum curator."));
-        players.add(createPlayer("max_robinson", "password123", "max.robinson@example.com", "/avatars/1.png", "Tech enthusiast and software developer."));
-        players.add(createPlayer("sophie_garcia", "password124", "sophie.garcia@example.com", "/avatars/2.png", "Nature photographer and wildlife conservationist."));
-        players.add(createPlayer("alex_turner", "password125", "alex.turner@example.com", "/avatars/3.png", "Music producer and DJ."));
-        players.add(createPlayer("mia_davis", "password126", "mia.davis@example.com", "/avatars/4.png", "Fitness coach and personal trainer."));
-        players.add(createPlayer("noah_clark", "password127", "noah.clark@example.com", "/avatars/5.png", "Adventure traveler and explorer."));
-        players.add(createPlayer("emily_hall", "password128", "emily.hall@example.com", "/avatars/1.png", "Fashion blogger and stylist."));
-        players.add(createPlayer("liam_wilson", "password129", "liam.wilson@example.com", "/avatars/2.png", "Entrepreneur and startup mentor."));
-        players.add(createPlayer("ava_morris", "password130", "ava.morris@example.com", "/avatars/3.png", "Book lover and literature enthusiast."));
-        players.add(createPlayer("owen_jackson", "password131", "owen.jackson@example.com", "/avatars/4.png", "Historian and researcher."));
-        players.add(createPlayer("ella_thomas", "password132", "ella.thomas@example.com", "/avatars/5.png", "DIY enthusiast and home decorator."));
-        players.add(createPlayer("mia_thompson", "password133", "mia.thompson@example.com", "/avatars/2.png", "Art student and aspiring painter."));
-        players.add(createPlayer("henry_carter", "password134", "henry.carter@example.com", "/avatars/3.png", "Music enthusiast and guitarist."));
-        players.add(createPlayer("ella_gomez", "password135", "ella.gomez@example.com", "/avatars/4.png", "Fitness instructor and yoga practitioner."));
-        players.add(createPlayer("leo_morgan", "password136", "leo.morgan@example.com", "/avatars/1.png", "Travel enthusiast and adventure seeker."));
-        players.add(createPlayer("amelia_reed", "password137", "amelia.reed@example.com", "/avatars/5.png", "Fashion designer and stylist."));
+        players.add(Player.builder()
+                .username("jane_smith")
+                .password("password456")
+                .email("jane.smith@example.com")
+                .avatarPath("/avatars/2.png")
+                .biography("Loves outdoor adventures and hiking.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
 
+        players.add(Player.builder()
+                .username("alice_jones")
+                .password("password789")
+                .email("alice.jones@example.com")
+                .avatarPath("/avatars/3.png")
+                .biography("Passionate about cooking and baking.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
 
-        for (PlayerDto player : players) {
-            player.setId(playerService.savePlayer(player));
-        }
+        players.add(Player.builder()
+                .username("bob_brown")
+                .password("password101")
+                .email("bob.brown@example.com")
+                .avatarPath("/avatars/4.png")
+                .biography("Enjoys painting and creating art.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
 
-        return players;
+        players.add(Player.builder()
+                .username("charlie_davis")
+                .password("password102")
+                .email("charlie.davis@example.com")
+                .avatarPath("/avatars/5.png")
+                .biography("Fitness trainer and health coach.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("david_ellis")
+                .password("password103")
+                .email("david.ellis@example.com")
+                .avatarPath("/avatars/1.png")
+                .biography("Professional photographer.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("eva_frank")
+                .password("password104")
+                .email("eva.frank@example.com")
+                .avatarPath("/avatars/2.png")
+                .biography("Software developer and tech geek.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("george_hall")
+                .password("password105")
+                .email("george.hall@example.com")
+                .avatarPath("/avatars/3.png")
+                .biography("Music lover and amateur guitarist.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("hannah_king")
+                .password("password106")
+                .email("hannah.king@example.com")
+                .avatarPath("/avatars/4.png")
+                .biography("Bookworm and aspiring writer.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("ian_lee")
+                .password("password107")
+                .email("ian.lee@example.com")
+                .avatarPath("/avatars/5.png")
+                .biography("History buff and museum guide.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("jack_miller")
+                .password("password108")
+                .email("jack.miller@example.com")
+                .avatarPath("/avatars/1.png")
+                .biography("Nature lover and environmentalist.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("kate_nelson")
+                .password("password109")
+                .email("kate.nelson@example.com")
+                .avatarPath("/avatars/2.png")
+                .biography("Marketing specialist and social media guru.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("liam_owen")
+                .password("password110")
+                .email("liam.owen@example.com")
+                .avatarPath("/avatars/3.png")
+                .biography("Startup founder and entrepreneur.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("maria_perez")
+                .password("password111")
+                .email("maria.perez@example.com")
+                .avatarPath("/avatars/4.png")
+                .biography("Travel blogger and photographer.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("nathan_quinn")
+                .password("password112")
+                .email("nathan.quinn@example.com")
+                .avatarPath("/avatars/5.png")
+                .biography("Pet lover and animal rescue volunteer.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("olivia_roberts")
+                .password("password113")
+                .email("olivia.roberts@example.com")
+                .avatarPath("/avatars/1.png")
+                .biography("DIY enthusiast and handyman.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("peter_smith")
+                .password("password114")
+                .email("peter.smith@example.com")
+                .avatarPath("/avatars/2.png")
+                .biography("Gamer and eSports competitor.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("quinn_taylor")
+                .password("password115")
+                .email("quinn.taylor@example.com")
+                .avatarPath("/avatars/3.png")
+                .biography("Fitness enthusiast and marathon runner.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("rachel_umpstead")
+                .password("password116")
+                .email("rachel.umpstead@example.com")
+                .avatarPath("/avatars/4.png")
+                .biography("Fashion designer and stylist.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("steven_valdez")
+                .password("password117")
+                .email("steven.valdez@example.com")
+                .avatarPath("/avatars/5.png")
+                .biography("Science teacher and astronomy fan.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("arthas")
+                .password("password118")
+                .email("arthas.some@exmpl.com")
+                .avatarPath("/avatars/1.png")
+                .biography("Arthas is a great player")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("chears")
+                .password("password119")
+                .email("chears.some@exmpl.com")
+                .avatarPath("/avatars/2.png")
+                .biography("Chears thinks he is a great player")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("dorin")
+                .password("password120")
+                .email("dorin.dorin@exmpl.com")
+                .avatarPath("/avatars/3.png")
+                .biography("Just a player")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("kali")
+                .password("password121")
+                .email("kali.k@exmpl.com")
+                .avatarPath("/avatars/4.png")
+                .biography(null)
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("lucy_bell")
+                .password("password122")
+                .email("lucy.bell@example.com")
+                .avatarPath("/avatars/5.png")
+                .biography("Art lover and museum curator.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("max_robinson")
+                .password("password123")
+                .email("max.robinson@example.com")
+                .avatarPath("/avatars/1.png")
+                .biography("Tech enthusiast and software developer.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("sophie_garcia")
+                .password("password124")
+                .email("sophie.garcia@example.com")
+                .avatarPath("/avatars/2.png")
+                .biography("Nature photographer and wildlife conservationist.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("alex_turner")
+                .password("password125")
+                .email("alex.turner@example.com")
+                .avatarPath("/avatars/3.png")
+                .biography("Music producer and DJ.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("mia_davis")
+                .password("password126")
+                .email("mia.davis@example.com")
+                .avatarPath("/avatars/4.png")
+                .biography("Fitness coach and personal trainer.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("noah_clark")
+                .password("password127")
+                .email("noah.clark@example.com")
+                .avatarPath("/avatars/5.png")
+                .biography("Adventure traveler and explorer.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("emily_hall")
+                .password("password128")
+                .email("emily.hall@example.com")
+                .avatarPath("/avatars/1.png")
+                .biography("Fashion blogger and stylist.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("liam_wilson")
+                .password("password129")
+                .email("liam.wilson@example.com")
+                .avatarPath("/avatars/2.png")
+                .biography("Entrepreneur and startup mentor.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("ava_morris")
+                .password("password130")
+                .email("ava.morris@example.com")
+                .avatarPath("/avatars/3.png")
+                .biography("Book lover and literature enthusiast.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("owen_jackson")
+                .password("password131")
+                .email("owen.jackson@example.com")
+                .avatarPath("/avatars/4.png")
+                .biography("Historian and researcher.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("ella_thomas")
+                .password("password132")
+                .email("ella.thomas@example.com")
+                .avatarPath("/avatars/5.png")
+                .biography("DIY enthusiast and home decorator.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("mia_thompson")
+                .password("password133")
+                .email("mia.thompson@example.com")
+                .avatarPath("/avatars/2.png")
+                .biography("Art student and aspiring painter.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("henry_carter")
+                .password("password134")
+                .email("henry.carter@example.com")
+                .avatarPath("/avatars/3.png")
+                .biography("Music enthusiast and guitarist.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("ella_gomez")
+                .password("password135")
+                .email("ella.gomez@example.com")
+                .avatarPath("/avatars/4.png")
+                .biography("Fitness instructor and yoga practitioner.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("leo_morgan")
+                .password("password136")
+                .email("leo.morgan@example.com")
+                .avatarPath("/avatars/1.png")
+                .biography("Travel enthusiast and adventure seeker.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+
+        players.add(Player.builder()
+                .username("amelia_reed")
+                .password("password137")
+                .email("amelia.reed@example.com")
+                .avatarPath("/avatars/5.png")
+                .biography("Fashion designer and stylist.")
+                .registrationDate(LocalDate.now())
+                .hostedParties(new HashSet<>())
+                .savedParties(new HashSet<>())
+                .participatingParties(new HashSet<>())
+                .build());
+        return new HashSet<>(playerRepository.saveAll(players));
     }
 }
