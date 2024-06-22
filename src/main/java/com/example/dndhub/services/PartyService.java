@@ -17,19 +17,12 @@ import java.util.stream.Collectors;
 public class PartyService {
     private final PlayerRepository playerRepository;
     private final PartyRepository partyRepository;
-    private final TagRepository tagRepository;
-    private final EditionRepository editionRepository;
-    private final PlaceRepository placeRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public PartyService(PlayerRepository playerService, PartyRepository partyRepository, TagRepository tagRepository,
-                        EditionRepository editionRepository, PlaceRepository placeRepository, ModelMapper modelMapper) {
+    public PartyService(PlayerRepository playerService, PartyRepository partyRepository, ModelMapper modelMapper) {
         this.playerRepository = playerService;
         this.partyRepository = partyRepository;
-        this.tagRepository = tagRepository;
-        this.editionRepository = editionRepository;
-        this.placeRepository = placeRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -93,25 +86,6 @@ public class PartyService {
      */
     public void deleteParty(int partyId) throws EntityNotFoundException {
         Party party = partyRepository.findById(partyId).orElseThrow(() -> new EntityNotFoundException("Party not found"));
-
-        for (Player player : party.getParticipatingPlayers()) {
-            player.getParticipatingParties().remove(party);
-        }
-        party.getParticipatingPlayers().clear();
-
-        for (Player player : party.getPlayersSaved()) {
-            player.getSavedParties().remove(party);
-        }
-        party.getPlayersSaved().clear();
-
-        party.getHost().getHostedParties().remove(party);
-        party.setHost(null);
-
-        party.getTags().forEach(tag -> tag.setParty(null));
-        party.getTags().clear();
-
-        party.setEdition(null);
-
         partyRepository.delete(party);
     }
 
