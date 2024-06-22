@@ -2,9 +2,7 @@ package com.example.dndhub.controllers;
 
 import com.example.dndhub.dtos.PartyDetailsDto;
 import com.example.dndhub.dtos.PartyListItemDto;
-import com.example.dndhub.dtos.PlayerSecureDto;
 import com.example.dndhub.services.PartyService;
-import com.example.dndhub.services.PlayerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +19,10 @@ public class PartyController {
 
     private final int playerId = 1; // TODO: Implement session handling
     private final PartyService partyService;
-    private final PlayerService playerService;
 
     @Autowired
-    public PartyController(PartyService partyService, PlayerService playerService) {
+    public PartyController(PartyService partyService) {
         this.partyService = partyService;
-        this.playerService = playerService;
     }
 
     /**
