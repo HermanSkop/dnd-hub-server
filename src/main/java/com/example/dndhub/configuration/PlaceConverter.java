@@ -11,12 +11,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PlaceConverter implements Converter<Place, PlaceDto> {
-    private final ModelMapper modelMapper;
-
-    public PlaceConverter(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
-
     @Override
     public PlaceDto convert(MappingContext<Place, PlaceDto> mappingContext) {
         Place source = mappingContext.getSource();

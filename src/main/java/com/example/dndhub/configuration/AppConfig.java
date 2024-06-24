@@ -1,9 +1,11 @@
 package com.example.dndhub.configuration;
 
+import com.example.dndhub.dtos.CurrentUserDto;
 import com.example.dndhub.dtos.OnlinePlatformDto;
 import com.example.dndhub.dtos.PlaceDto;
 import com.example.dndhub.models.place.OnlinePlatform;
 import com.example.dndhub.models.place.Place;
+import com.example.dndhub.models.user.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.context.annotation.Bean;
@@ -29,11 +31,11 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        TypeMap<Place, PlaceDto> placeTypeMap = modelMapper.createTypeMap(Place.class, PlaceDto.class)
-                .setConverter(new PlaceConverter(modelMapper));
+        modelMapper.createTypeMap(Place.class, PlaceDto.class)
+                .setConverter(new PlaceConverter());
 
-        modelMapper.createTypeMap(OnlinePlatform.class, OnlinePlatformDto.class)
-                .includeBase(Place.class, PlaceDto.class);
+        modelMapper.createTypeMap(User.class, CurrentUserDto.class)
+                .setConverter(new CurrentUserConverter());
 
         return modelMapper;
     }
