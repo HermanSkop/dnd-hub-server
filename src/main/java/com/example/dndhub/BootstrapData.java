@@ -2,16 +2,15 @@ package com.example.dndhub;
 
 import com.example.dndhub.models.Duration;
 import com.example.dndhub.models.Party;
+import com.example.dndhub.models.Tag;
 import com.example.dndhub.models.edition.Edition;
 import com.example.dndhub.models.edition.EditionType;
 import com.example.dndhub.models.place.OnlinePlatform;
 import com.example.dndhub.models.place.OnlinePlatformType;
 import com.example.dndhub.models.place.Place;
 import com.example.dndhub.models.user.Player;
-import com.example.dndhub.repositories.EditionRepository;
-import com.example.dndhub.repositories.PartyRepository;
-import com.example.dndhub.repositories.PlaceRepository;
-import com.example.dndhub.repositories.PlayerRepository;
+import com.example.dndhub.repositories.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -30,14 +29,17 @@ public class BootstrapData implements CommandLineRunner {
     private final PlayerRepository playerRepository;
     private final EditionRepository editionRepository;
     private final PlaceRepository placeRepository;
+    private final TagRepository tagRepository;
 
     @Autowired
     public BootstrapData(PartyRepository partyRepository, EditionRepository editionRepository, PlaceRepository placeRepository,
-                         PlayerRepository playerRepository) {
+                         PlayerRepository playerRepository,
+                         TagRepository tagRepository) {
         this.partyRepository = partyRepository;
         this.editionRepository = editionRepository;
         this.placeRepository = placeRepository;
         this.playerRepository = playerRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -55,6 +57,7 @@ public class BootstrapData implements CommandLineRunner {
         HashSet<Player> players = createPlayers();
         HashSet<Party> parties = createParties(players, places);
     }
+
 
     private HashSet<Place> createPlaces() {
         HashSet<Place> places = new HashSet<>();
@@ -90,9 +93,22 @@ public class BootstrapData implements CommandLineRunner {
         return new HashSet<>(placeRepository.saveAll(places));
     }
 
-    private HashSet<Party> createParties(HashSet<Player> players, HashSet<Place> places) {
+    protected HashSet<Party> createParties(HashSet<Player> players, HashSet<Place> places) {
         HashSet<Party> parties = new HashSet<>();
         for (int i = 0; i < 10; i++) {
+            HashSet<Tag> tags = new HashSet<>();
+            tags.add(Tag.builder()
+                    .value("Adults only")
+                    .iconPath("/tags/adults.svg")
+                    .build());
+            tags.add(Tag.builder()
+                    .value("Beginner friendly")
+                    .iconPath("/tags/newbies.svg")
+                    .build());
+            tags.add(Tag.builder()
+                    .value("Paid")
+                    .iconPath("/tags/paid.svg")
+                    .build());
             Party party = Party.builder()
                     .name("Party " + (i + 1))
                     .description("""
@@ -112,8 +128,12 @@ public class BootstrapData implements CommandLineRunner {
                     .playersSaved(new HashSet<>(players))
                     .edition(editionRepository.findById(1).orElseThrow())
                     .place(places.stream().skip(i % 4).findFirst().orElseThrow())
+                    .tags(tags.stream().skip(i % 3).limit(2).collect(Collectors.toSet()))
                     .build();
             party.getDuration().setParty(party);
+            for (Tag tag : party.getTags())
+                tag.setParty(party);
+
             parties.add(partyRepository.save(party));
         }
         return parties;

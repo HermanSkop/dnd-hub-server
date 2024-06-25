@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PartyRepository extends JpaRepository<Party, Integer>, JpaSpecificationExecutor<Party> {
-    @EntityGraph(attributePaths = {"participatingPlayers", "place", "host"})
+    @EntityGraph(attributePaths = {"participatingPlayers", "place", "host", "tags"})
     Optional<Party> findById(int id);
 
-    @EntityGraph(attributePaths = {"participatingPlayers", "place"})
+    @EntityGraph(attributePaths = {"participatingPlayers", "place", "tags"})
     List<Party> findAll();
 }

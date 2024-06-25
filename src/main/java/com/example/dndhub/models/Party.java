@@ -64,13 +64,12 @@ public class Party {
 
     @Builder.Default
     @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Tag> tags = new HashSet<>();
 
     @ManyToMany
     @Builder.Default
     @ToString.Exclude
-    @JoinTable(name = "Players_Saved_Parties")
     private Set<Player> playersSaved = new HashSet<>();
 
     @ManyToMany

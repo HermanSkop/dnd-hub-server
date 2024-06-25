@@ -19,9 +19,9 @@ public class PartyDetailsDto {
     private String description;
     private int maxPlayers;
     private DurationDto duration;
-    @JsonManagedReference
     private PlaceDto place;
     private PlayerSecureDto host;
+    private HashSet<TagDto> tags = new HashSet<>();
     private HashSet<PlayerSecureDto> participatingPlayers = new HashSet<>();
 
     public void setName(String name) {
@@ -75,5 +75,15 @@ public class PartyDetailsDto {
 
     public HashSet<PlayerSecureDto> getParticipatingPlayers() {
         return new HashSet<>(participatingPlayers);
+    }
+
+    public void setTags(HashSet<TagDto> tags) {
+        if (tags.contains(null))
+            throw new IllegalArgumentException("Tags cannot contain null elements");
+        this.tags = tags;
+    }
+
+    public HashSet<TagDto> getTags() {
+        return new HashSet<>(tags);
     }
 }

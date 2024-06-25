@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -20,6 +21,7 @@ public class PartyListItemDto {
     int maxPlayers;
     int participatingPlayers;
     String placeIconPath;
+    HashSet<TagDto> tags = new HashSet<>();
 
     public void setName(String name) {
         if (name == null || name.isBlank())
@@ -51,5 +53,15 @@ public class PartyListItemDto {
                 throw new IllegalArgumentException("Place icon path cannot be blank");
             this.placeIconPath = onlinePlatform.getIconPath();
         }
+    }
+
+    public void setTags(HashSet<TagDto> tags) {
+        if (tags.contains(null))
+            throw new IllegalArgumentException("Tags cannot contain null elements");
+        this.tags = tags;
+    }
+
+    public HashSet<TagDto> getTags() {
+        return new HashSet<>(tags);
     }
 }
