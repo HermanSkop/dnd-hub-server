@@ -69,6 +69,8 @@ public class PartyDetailsDto {
         this.participatingPlayers = Objects.requireNonNullElseGet(participatingPlayers, HashSet::new);
         if (participatingPlayers.contains(null))
             throw new IllegalArgumentException("Participating players cannot contain null");
+        if (participatingPlayers.size()>maxPlayers)
+            throw new IllegalArgumentException("Participating players cannot contain more than " + maxPlayers + " players");
         if (this.host != null && participatingPlayers.contains(this.host))
             throw new IllegalArgumentException("Host cannot participate their own party");
     }

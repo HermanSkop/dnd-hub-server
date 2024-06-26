@@ -1,13 +1,10 @@
 package com.example.dndhub.configuration;
 
 import com.example.dndhub.dtos.CurrentUserDto;
-import com.example.dndhub.dtos.OnlinePlatformDto;
 import com.example.dndhub.dtos.PlaceDto;
-import com.example.dndhub.models.place.OnlinePlatform;
 import com.example.dndhub.models.place.Place;
 import com.example.dndhub.models.user.User;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,6 +23,7 @@ public class AppConfig {
     public static final int minEditionNameLength = 3;
     public static final int maxEditionNameLength = 30;
     public static final int maxEditionDescriptionLength = 5000;
+    public static final int testPlayerId = 9;
 
 
     @Bean

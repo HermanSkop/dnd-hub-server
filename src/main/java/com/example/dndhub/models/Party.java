@@ -105,5 +105,8 @@ public class Party {
         if (participatingPlayers.contains(host)) {
             throw new IllegalArgumentException("Host cannot participate their own party");
         }
+        if (participatingPlayers.size() > maxPlayers) {
+            throw new IllegalArgumentException("Max number of players was exceeded: " + maxPlayers);
+        }
     }
 }

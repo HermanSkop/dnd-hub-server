@@ -1,5 +1,6 @@
 package com.example.dndhub.controllers;
 
+import com.example.dndhub.configuration.AppConfig;
 import com.example.dndhub.dtos.PartyDetailsDto;
 import com.example.dndhub.dtos.PartyListItemDto;
 import com.example.dndhub.services.PartyService;
@@ -16,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/party")
 public class PartyController {
     private static final Logger logger = LoggerFactory.getLogger(PartyController.class);
-
-    private final int playerId = 1; // TODO: Implement session handling
     private final PartyService partyService;
 
     @Autowired
@@ -54,7 +53,7 @@ public class PartyController {
     @PostMapping(path = "/{id}/join")
     public ResponseEntity<PartyDetailsDto> joinParty(@PathVariable("id") int id) {
         try {
-            PartyDetailsDto partyDto = partyService.joinParty(id, playerId);
+            PartyDetailsDto partyDto = partyService.joinParty(id, AppConfig.testPlayerId);
             return new ResponseEntity<>(partyDto, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -68,7 +67,7 @@ public class PartyController {
     @PostMapping(path = "/{id}/leave")
     public ResponseEntity<PartyDetailsDto> leaveParty(@PathVariable("id") int id) {
         try {
-            PartyDetailsDto partyDto = partyService.leaveParty(id, playerId);
+            PartyDetailsDto partyDto = partyService.leaveParty(id, AppConfig.testPlayerId);
             return new ResponseEntity<>(partyDto, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

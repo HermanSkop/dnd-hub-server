@@ -1,5 +1,6 @@
 package com.example.dndhub.controllers;
 
+import com.example.dndhub.configuration.AppConfig;
 import com.example.dndhub.dtos.CurrentUserDto;
 import com.example.dndhub.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,6 @@ public class UserController {
 
     @GetMapping(path = "/current")
     public CurrentUserDto getCurrentUser() {
-        return userService.getUserById(1);
+        return userService.getUserById(AppConfig.testPlayerId);
     }
 }
